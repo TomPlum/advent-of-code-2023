@@ -1,4 +1,4 @@
-# :christmas_tree: Advent of Code 2024
+# :christmas_tree: Advent of Code 2023
 
 ![GitHub](https://img.shields.io/badge/stars-00%2F50-yellow)
 
