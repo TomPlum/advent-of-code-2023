@@ -1,14 +1,6 @@
-# :christmas_tree: Advent of Code {YEAR}
+# :christmas_tree: Advent of Code 2024
 
 ![GitHub](https://img.shields.io/badge/stars-00%2F50-yellow)
-
-## How to use this template
-See examples of this template being used in my previous Advent of Code projects.
-* [advent-of-code-2019](https://github.com/TomPlum/advent-of-code-2019) was the year that establish the format of the codebase.
-* [advent-of-code-2020](https://github.com/TomPlum/advent-of-code-2019) improved it a little bit.
-
-Also see [advent-of-code-libs](https://github.com/TomPlum/advent-of-code-libs) where a lot of common code has been extracted. It's compiled in this template
-via Gradle and is pulled from the GitHub packages registry.
 
 ## What is Advent of Code?
 
@@ -53,7 +45,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 
 | Day | Part 1 Answer | Avg Time | Part 2 Answer | Avg Time | Documentation             |
 |-----|---------------|----------|---------------|----------|---------------------------|
-| 01  | 4123          | 9ms      | 1653          | 123ms    | [Day Name](docs/DAY01.MD) |
+| 01  | -             | -        | -             | -        | [Day Name](docs/DAY01.MD) |
 | 02  | -             | -        | -             | -        | [](docs/DAY02.MD)         |
 | 03  | -             | -        | -             | -        | [](docs/DAY03.MD)         |
 | 04  | -             | -        | -             | -        | [](docs/DAY04.MD)         |
