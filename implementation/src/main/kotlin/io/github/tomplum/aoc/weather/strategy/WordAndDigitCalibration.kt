@@ -1,6 +1,6 @@
-package io.github.tomplum.aoc
+package io.github.tomplum.aoc.weather.strategy
 
-class Calibrator(private val input: List<String>) {
+class WordAndDigitCalibration : CalibrationStrategy {
     private val validNumbers = mapOf(
         "one" to 1,
         "two" to 2,
@@ -13,14 +13,7 @@ class Calibrator(private val input: List<String>) {
         "nine" to 9
     )
 
-    fun calibrate(): Int {
-        return input
-            .map { it.filter { char -> char.isDigit() } }
-            .map { it.first().toString() + it.last() }
-            .sumOf { it.toInt() }
-    }
-
-    fun calibrateWithWords(): Int = input.map { calibrationValue ->
+    override fun calibrate(document: List<String>): Int = document.map { calibrationValue ->
         val firstDigit = calibrationValue
             .firstOrNull { value -> value.isDigit() }
             ?.let { value -> value.toString() to calibrationValue.indexOf(value) }
