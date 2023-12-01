@@ -1,66 +1,53 @@
 package io.github.tomplum.aoc
 
-class Calibrator(val input: List<String>) {
+class Calibrator(private val input: List<String>) {
+    private val validNumbers = mapOf(
+        "one" to 1,
+        "two" to 2,
+        "three" to 3,
+        "four" to 4,
+        "five" to 5,
+        "six" to 6,
+        "seven" to 7,
+        "eight" to 8,
+        "nine" to 9
+    )
+
     fun calibrate(): Int {
-       return input
-           .map { it.filter { char -> char.isDigit() } }
-           .map { it.first().toString() + it.last() }
-           .sumOf { it.toInt() }
-    }
-
-    fun calibrateWithWords(): Int {
         return input
-            .map {
-                var i = 0
-                val digits = mutableListOf<Any>()
-                while (i < it.length) {
-                    if (it[i].isDigit()) {
-                        digits.add(it[i].toString().toInt())
-                        i++
-                    } else if(words.keys.any { word -> word.first() === it[i] }) {
-                        val found = words.keys.find { word ->
-                            val canFit = (it.length - i) >= word.length
-                            if (it[i] in word && canFit) {
-                                val rest = word.drop(1)
-                                return@find it.subSequence(i + 1, i + rest.length + 1) == rest
-                            }
-                            false
-                        }
-
-                        if (found != null) {
-                            digits.add(found)
-                            i += found.length
-                        } else {
-                            i++
-                        }
-//                        words.keys.forEach { word ->
-//                            if (it[i] in word) {
-//                                val rest = word.drop(1)
-//                                if (it.subSequence(i + 1, i + rest.length + 1) == rest) {
-//                                    digits.add(word)
-//                                    i += word.length
-//                                    return@forEach
-//                                }
-//                            }
-//                        }
-                    } else {
-                        i++
-                    }
-                }
-                digits.map { value ->
-                    if (value in words.keys) {
-                        words[value]?: 0
-                    } else {
-                        value.toString().toInt()
-                    }
-                }
-            }
+            .map { it.filter { char -> char.isDigit() } }
             .map { it.first().toString() + it.last() }
             .sumOf { it.toInt() }
     }
 
-    private val words = mapOf(
-        Pair("one", 1), Pair("two", 2), Pair("three", 3), Pair("four", 4), Pair("five", 5),
-        Pair("six", 6), Pair("seven", 7), Pair("eight", 8), Pair("nine", 9)
-    )
+    fun calibrateWithWords(): Int = input.map { calibrationValue ->
+        val firstDigit = calibrationValue
+            .firstOrNull { value -> value.isDigit() }
+            ?.let { value -> value.toString() to calibrationValue.indexOf(value) }
+
+        val firstWord = validNumbers.keys.mapNotNull { word ->
+            if (calibrationValue.contains(word)) {
+                return@mapNotNull validNumbers[word]!!.toString() to calibrationValue.indexOf(word)
+            }
+
+            null
+        }.minByOrNull { (_, index) -> index }
+
+        val lastDigit = calibrationValue
+            .lastOrNull { value -> value.isDigit() }
+            ?.let { value -> value.toString() to calibrationValue.lastIndexOf(value) }
+
+        val lastWord = validNumbers.keys.mapNotNull { key ->
+            if (calibrationValue.contains(key)) {
+                return@mapNotNull validNumbers[key]!!.toString() to calibrationValue.lastIndexOf(key)
+            }
+
+            null
+        }.maxByOrNull { (_, index) -> index }
+
+        val first = listOf(firstDigit, firstWord).minBy { it?.second ?: Int.MAX_VALUE }!!.first
+        val last = listOf(lastDigit, lastWord).maxBy { it?.second ?: Int.MIN_VALUE }!!.first
+
+        "$first$last".toInt()
+    }.sum()
 }
