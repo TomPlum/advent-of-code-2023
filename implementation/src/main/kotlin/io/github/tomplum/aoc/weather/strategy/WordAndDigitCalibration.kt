@@ -1,9 +1,7 @@
 package io.github.tomplum.aoc.weather.strategy
 
-data class CalibrationValue(val index: Int, val value: Any) {
-    companion object {
-    }
-}
+import io.github.tomplum.aoc.weather.CalibrationCandidatePair
+import io.github.tomplum.aoc.weather.CalibrationValue
 
 class WordAndDigitCalibration : CalibrationStrategy {
     private val words = listOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
@@ -11,17 +9,14 @@ class WordAndDigitCalibration : CalibrationStrategy {
     override fun calibrate(document: List<String>): Int = document.sumOf { calibrationString ->
         val firstDigit = calibrationString.findFirstDigit { value -> calibrationString.indexOf(value) }
         val firstWord = calibrationString.findFirstWord()
+        val firstCandidate = CalibrationCandidatePair(firstDigit, firstWord)
 
         val lastDigit = calibrationString.findLastDigit { value -> calibrationString.lastIndexOf(value) }
         val lastWord = calibrationString.findLastWord()
+        val lastCandidate = CalibrationCandidatePair(lastDigit, lastWord)
 
-        val first = listOf(firstDigit, firstWord)
-            .minByOrNull { calibrationValue -> calibrationValue?.index ?: Int.MAX_VALUE }!!
-            .value
-
-        val last = listOf(lastDigit, lastWord)
-            .maxByOrNull { calibrationValue -> calibrationValue?.index ?: Int.MIN_VALUE }!!
-            .value
+        val first = firstCandidate.getFirstCalibrationDigit()
+        val last = lastCandidate.getLastCalibrationDigit()
 
         "$first$last".toInt()
     }
