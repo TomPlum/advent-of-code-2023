@@ -7,11 +7,18 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class CalibratorTest {
-    private val input = TestInputReader.read<String>("day1/example-1.txt")
-    private val calibrator = Calibrator(input.value)
 
     @Test
     fun examplePartOne() {
+        val input = TestInputReader.read<String>("day1/example-1.txt")
+        val calibrator = Calibrator(input.value)
         assertThat(calibrator.calibrate()).isEqualTo(142)
+    }
+
+    @Test
+    fun examplePartTwo() {
+        val input = TestInputReader.read<String>("day1/example-2.txt")
+        val calibrator = Calibrator(input.value)
+        assertThat(calibrator.calibrateWithWords()).isEqualTo(281)
     }
 }
