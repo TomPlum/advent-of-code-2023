@@ -1,31 +1,19 @@
 package io.github.tomplum.aoc.weather.strategy
 
-data class CalibrationValue(val index: Int, val value: Any)
+data class CalibrationValue(val index: Int, val value: Any) {
+    companion object {
+    }
+}
 
 class WordAndDigitCalibration : CalibrationStrategy {
-    private val words = mapOf(
-        "one" to 1, "two" to 2, "three" to 3, "four" to 4,
-        "five" to 5, "six" to 6, "seven" to 7, "eight" to 8, "nine" to 9
-    )
+    private val words = listOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 
     override fun calibrate(document: List<String>): Int = document.sumOf { calibrationString ->
-        val firstDigit = calibrationString
-            .firstOrNull { value -> value.isDigit() }
-            ?.let { value -> CalibrationValue(calibrationString.indexOf(value), value) }
+        val firstDigit = calibrationString.findFirstDigit { value -> calibrationString.indexOf(value) }
+        val firstWord = calibrationString.findFirstWord()
 
-        val firstWord = words.keys
-            .filter { word -> calibrationString.contains(word) }
-            .map { word -> CalibrationValue(calibrationString.indexOf(word), words[word]!!) }
-            .minByOrNull { calibrationValue -> calibrationValue.index }
-
-        val lastDigit = calibrationString
-            .lastOrNull { value -> value.isDigit() }
-            ?.let { value -> CalibrationValue(calibrationString.lastIndexOf(value), value) }
-
-        val lastWord = words.keys
-            .filter { word -> calibrationString.contains(word) }
-            .map { word -> CalibrationValue(calibrationString.lastIndexOf(word), words[word]!!) }
-            .maxByOrNull { calibrationValue -> calibrationValue.index }
+        val lastDigit = calibrationString.findLastDigit { value -> calibrationString.lastIndexOf(value) }
+        val lastWord = calibrationString.findLastWord()
 
         val first = listOf(firstDigit, firstWord)
             .minByOrNull { calibrationValue -> calibrationValue?.index ?: Int.MAX_VALUE }!!
@@ -37,4 +25,27 @@ class WordAndDigitCalibration : CalibrationStrategy {
 
         "$first$last".toInt()
     }
+
+    private fun String.findFirstDigit(indexPredicate: (char: Char) -> Int): CalibrationValue? = this
+        .firstOrNull { value -> value.isDigit() }
+        ?.let(function(indexPredicate))
+
+    private fun String.findLastDigit(indexPredicate: (char: Char) -> Int): CalibrationValue? = this
+        .lastOrNull { value -> value.isDigit() }
+        ?.let(function(indexPredicate))
+
+    private fun function(indexPredicate: (char: Char) -> Int) =
+        { value: Char -> CalibrationValue(indexPredicate(value), value) }
+
+    private fun String.findLastWord(): CalibrationValue? = words
+        .filter { word -> this.contains(word) }
+        .map { word -> CalibrationValue(this.lastIndexOf(word), getWordValue(word)) }
+        .maxByOrNull { calibrationValue -> calibrationValue.index }
+
+    private fun String.findFirstWord(): CalibrationValue? = words
+        .filter { word -> this.contains(word) }
+        .map { word -> CalibrationValue(this.indexOf(word), getWordValue(word)) }
+        .minByOrNull { calibrationValue -> calibrationValue.index }
+
+    private fun getWordValue(word: String) = words.indexOf(word) + 1
 }
