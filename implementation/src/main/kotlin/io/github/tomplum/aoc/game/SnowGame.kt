@@ -1,62 +1,47 @@
 package io.github.tomplum.aoc.game
 
-data class Cubes(val red: Int, val green: Int, val blue: Int)
+enum class Colour {
+    RED, GREEN, BLUE
+}
 
-data class Game(val id: Int, val subsets: List<Cubes>)
+data class Game(val id: Int, val subsets: List<Map<Colour, Int>>)
 
-class SnowGame(val record: List<String>) {
+class SnowGame(record: List<String>) {
 
     private val games = record.map { game ->
-        val parts = game.split(": ")
-        val id = parts[0].split(" ")[1].toInt()
-        val subsets = parts[1].split(";").map { segment ->
-            var blue = 0
-            var red = 0
-            var green = 0
+        val regex = Regex("Game (?<id>\\d+): (?<sets>.*)")
+        val match = regex.find(game)!!
 
-            segment.trim().split(",").forEach { info ->
-                val bits = info.trim().split(" ")
-                val quantity = bits[0].toInt()
-                when(bits[1]) {
-                    "blue" -> {
-                        blue = quantity
-                    }
-                    "red" -> {
-                        red = quantity
-                    }
-                    "green" -> {
-                        green = quantity
-                    }
-                    else -> {
-                        throw IllegalArgumentException("Invalid colour ${bits[1]}")
-                    }
-                }
+        val id = match.groups["id"]?.value?.toInt() ?: 0
+
+        val subsets = match.groups["sets"]!!.value.split(";").map { segment ->
+            val segmentRegex = Regex("(?<quantity>\\d+) (?<colour>red|green|blue)")
+            segment.split(",").fold(mutableMapOf<Colour, Int>()) { acc, value ->
+                val segmentMatch = segmentRegex.find(value.trim())!!
+                val quantity = segmentMatch.groups["quantity"]!!.value.toInt()
+                val colour = segmentMatch.groups["colour"]!!.value
+                acc[Colour.valueOf(colour.uppercase())] = quantity
+                acc
             }
-
-            val info = Cubes(red, green, blue)
-            blue = 0
-            red = 0
-            green = 0
-            info
         }
 
         Game(id, subsets)
     }
 
-    fun determinePossibleGames(red: Int, green: Int, blue: Int): List<Int> {
-        val possibleGames = games.filter { game ->
+    fun determinePossibleGames(red: Int, green: Int, blue: Int): List<Int> = games
+        .filter { game ->
             game.subsets.all { subset ->
-                subset.blue <= blue && subset.red <= red && subset.green <= green
+                (subset[Colour.BLUE] ?: 0) <= blue &&
+                (subset[Colour.RED] ?: 0) <= red &&
+                (subset[Colour.GREEN] ?: 0) <= green
             }
         }
-
-        return possibleGames.map { game -> game.id }
-    }
+        .map { game -> game.id }
 
     fun determinePower(): Int = games.sumOf { game ->
-        val blue = game.subsets.maxOf { subset -> subset.blue }
-        val red = game.subsets.maxOf { subset -> subset.red }
-        val green = game.subsets.maxOf { subset -> subset.green }
+        val blue = game.subsets.maxOf { subset -> subset[Colour.BLUE] ?: 0 }
+        val red = game.subsets.maxOf { subset -> subset[Colour.RED] ?: 0 }
+        val green = game.subsets.maxOf { subset -> subset[Colour.GREEN] ?: 0 }
         blue * red * green
     }
 }
