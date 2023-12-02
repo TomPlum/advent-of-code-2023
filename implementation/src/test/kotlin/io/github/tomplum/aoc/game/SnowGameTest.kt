@@ -13,4 +13,12 @@ class SnowGameTest {
         val ids = game.determinePossibleGames(12, 13, 14)
         assertThat(ids.sum()).isEqualTo(8)
     }
+
+    @Test
+    fun examplePartTwo() {
+        val input = TestInputReader.read<String>("day2/example-1.txt").value
+        val game = SnowGame(input)
+        val power = game.determinePower()
+        assertThat(power).isEqualTo(2286)
+    }
 }
