@@ -13,4 +13,8 @@ class Day2 : Solution<Int, Int> {
     override fun part1(): Int {
         return snowGame.determinePossibleGames(red = 12, green = 13, blue = 14).sum()
     }
+
+    override fun part2(): Int {
+        return snowGame.determinePower()
+    }
 }
