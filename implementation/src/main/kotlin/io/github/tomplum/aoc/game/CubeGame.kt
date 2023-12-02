@@ -6,7 +6,7 @@ enum class Colour {
 
 data class Game(val id: Int, val subsets: List<Map<Colour, Int>>)
 
-class SnowGame(record: List<String>) {
+class CubeGame(record: List<String>) {
 
     private val games = record.map { game ->
         val regex = Regex("Game (?<id>\\d+): (?<sets>.*)")
