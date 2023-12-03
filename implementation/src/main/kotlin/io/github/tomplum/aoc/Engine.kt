@@ -57,7 +57,7 @@ class Engine(schematic: List<String>) : AdventMap2D<EnginePart>() {
         return numbers.sum()
     }
 
-    fun determineGearRatio(): Int {
+    fun determineGearRatio(): Long {
         val groups = mutableListOf<List<Pair<Point2D, EnginePart>>>()
         var index = 0
         var group = mutableListOf<Pair<Point2D, EnginePart>>()
@@ -75,28 +75,24 @@ class Engine(schematic: List<String>) : AdventMap2D<EnginePart>() {
             .filter { it.isNotEmpty() }
             .map { g ->
                 val points = g.map { it.first }
-                val number = g.map { it.second.value.toString().toInt() }.joinToString("").toInt()
+                val number = g.map { it.second.value.toString().toInt() }.joinToString("").toLong()
                 Pair(points, number)
             }
 
         return filterTiles { part -> part.isGearCandidate() }
             .mapNotNull { (pos, gear) ->
-              /*  val values = pos.adjacent().map { point ->
-                    getTile(point, EnginePart('.'))
-                }.filter { it.isIntegerValue() }*/
-
-                val adj = pos.adjacent()
-                val matchedNumbers = mutableMapOf<Int, List<Point2D>>()
+                val adjacentPoints = pos.adjacent()
+                val adjacentPartNumbers = mutableMapOf<List<Point2D>, Long>()
                 numbers.forEach { (points, number) ->
-                    adj.forEach { adjPoint ->
-                        if (!matchedNumbers.containsKey(number) && adjPoint in points) {
-                            matchedNumbers[number] = points
+                    adjacentPoints.forEach { adjPoint ->
+                        if (!adjacentPartNumbers.containsKey(points) && adjPoint in points) {
+                            adjacentPartNumbers[points] = number
                         }
                     }
                 }
 
-                if (matchedNumbers.size == 2) {
-                    return@mapNotNull matchedNumbers.keys.toList().product()
+                if (adjacentPartNumbers.size == 2) {
+                    return@mapNotNull adjacentPartNumbers.values.toList().product()
                 }
 
                 null
