@@ -12,4 +12,11 @@ class EngineTest {
         val partNumbers = Engine(input).determinePartNumbers()
         assertThat(partNumbers).isEqualTo(4361)
     }
+
+    @Test
+    fun partTwoExample() {
+        val input = TestInputReader.read<String>("day3/example-1.txt").value
+        val gearRatio = Engine(input).determineGearRatio()
+        assertThat(gearRatio).isEqualTo(467835)
+    }
 }
