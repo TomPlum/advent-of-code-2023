@@ -1,4 +1,4 @@
-package io.github.tomplum.aoc
+package io.github.tomplum.aoc.engine
 
 import io.github.tomplum.libs.math.map.MapTile
 

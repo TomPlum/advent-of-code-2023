@@ -1,6 +1,6 @@
 package io.github.tomplum.aoc.solutions
 
-import io.github.tomplum.aoc.Engine
+import io.github.tomplum.aoc.engine.Engine
 import io.github.tomplum.libs.input.Day
 import io.github.tomplum.libs.input.InputReader
 import io.github.tomplum.libs.solutions.Solution

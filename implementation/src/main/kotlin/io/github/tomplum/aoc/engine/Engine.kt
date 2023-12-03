@@ -1,11 +1,11 @@
-package io.github.tomplum.aoc
+package io.github.tomplum.aoc.engine
 
 import io.github.tomplum.libs.extensions.product
 import io.github.tomplum.libs.math.map.AdventMap2D
 import io.github.tomplum.libs.math.point.Point2D
 import kotlin.math.abs
 
-class Engine(schematic: List<String>) : AdventMap2D<EnginePart>() {
+class Engine(private val schematic: List<String>) : AdventMap2D<EnginePart>() {
 
     private var groups: List<List<Pair<Point2D, EnginePart>>>
 
@@ -28,6 +28,15 @@ class Engine(schematic: List<String>) : AdventMap2D<EnginePart>() {
         groups = findPartNumberGroups()
     }
 
+    /**
+     * Determines the part number of the engine from
+     * the values in the [schematic].
+     *
+     * A part number is a numerical value in an [EnginePart]
+     * that is adjacent to a symbol.
+     *
+     * @return The sum of the part numbers.
+     */
     fun determinePartNumbers(): Int = groups
         .asSequence()
         .filter {
@@ -40,17 +49,20 @@ class Engine(schematic: List<String>) : AdventMap2D<EnginePart>() {
         .toList()
         .sum()
 
+    /**
+     * Determines the ratio of every gear in the engine.
+     * A gear is denoted by a '*' symbol in the [schematic]
+     * that is adjacent to exactly two part numbers.
+     *
+     * @return The sum of the gear ratios.
+     */
     fun determineGearRatio(): Long {
-        val numbers = groups
-            .filter { group -> group.isNotEmpty() }
-            .map { group ->
-                val points = group.map { (pos) -> pos }
-                val number = group.map { (_, part) -> part.value.toString().toInt() }
-                    .joinToString("")
-                    .toLong()
-
-                Pair(points, number)
-            }
+        val numbers = groups.map { group ->
+            group.map { (_, part) -> part.value.toString().toInt() }
+                .joinToString("")
+                .toLong()
+                .let { partNumber -> Pair(group.map { (pos) -> pos }, partNumber) }
+        }
 
         return filterTiles { part -> part.isGearCandidate() }
             .keys
