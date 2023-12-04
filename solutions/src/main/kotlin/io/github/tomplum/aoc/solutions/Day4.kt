@@ -13,4 +13,8 @@ class Day4 : Solution<Int, Int> {
     override fun part1(): Int {
         return analyser.calculateTotalPoints()
     }
+
+    override fun part2(): Int {
+        return analyser.calculateTotalScratchCardQuantity()
+    }
 }
