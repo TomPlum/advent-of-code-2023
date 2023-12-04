@@ -18,16 +18,10 @@ class ScratchCardAnalyser(table: List<String>) {
 
     fun calculateTotalPoints(): Int = scratchCards.fold(0) { points, card ->
         var cardPoints = 0
-        var isFirstMatch = true
 
         card.winningNumbers.forEach { winning ->
             if (winning in card.numbers) {
-                if (isFirstMatch) {
-                    cardPoints += 1
-                    isFirstMatch = false
-                } else {
-                    cardPoints *= 2
-                }
+                if (cardPoints == 0) cardPoints += 1 else cardPoints *= 2
             }
         }
 
