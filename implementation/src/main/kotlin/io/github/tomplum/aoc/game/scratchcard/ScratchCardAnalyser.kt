@@ -6,7 +6,7 @@ class ScratchCardAnalyser(table: List<String>) {
         val split = data.split("|")
         val left = split[0]
         val leftParts = left.split(": ")
-        val winning = leftParts[1].trim().split(" ").map { value -> value.toInt() }
+        val winning = leftParts[1].trim().split(" ").filter { value -> value.isNotBlank() }.map { value -> value.toInt() }
         val id = leftParts[0].removePrefix("Card ").trim().toInt()
         val numbers = split[1].trim().split(" ").filter { value -> value.isNotBlank() }.map { value -> value.toInt() }
         ScratchCard(id, winning, numbers)

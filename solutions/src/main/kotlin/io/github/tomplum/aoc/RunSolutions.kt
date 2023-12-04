@@ -5,5 +5,5 @@ import io.github.tomplum.libs.solutions.SolutionRunner
 import java.time.Year
 
 fun main() {
-    SolutionRunner.run(Year.of(2023), Day1(), Day2(), Day3())
+    SolutionRunner.run(Year.of(2023), Day1(), Day2(), Day3(), Day4())
 }
