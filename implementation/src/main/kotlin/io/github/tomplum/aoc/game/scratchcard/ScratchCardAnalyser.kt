@@ -2,13 +2,18 @@ package io.github.tomplum.aoc.game.scratchcard
 
 class ScratchCardAnalyser(table: List<String>) {
 
+    private fun String.parseNumberList() = this.trim()
+        .split(" ")
+        .filter { value -> value.isNotBlank() }
+        .map { value -> value.toInt() }
+
     private val scratchCards = table.map { data ->
         val split = data.split("|")
         val left = split[0]
         val leftParts = left.split(": ")
-        val winning = leftParts[1].trim().split(" ").filter { value -> value.isNotBlank() }.map { value -> value.toInt() }
+        val winning = leftParts[1].parseNumberList()
         val id = leftParts[0].removePrefix("Card ").trim().toInt()
-        val numbers = split[1].trim().split(" ").filter { value -> value.isNotBlank() }.map { value -> value.toInt() }
+        val numbers = split[1].parseNumberList()
         ScratchCard(id, winning, numbers)
     }
 
