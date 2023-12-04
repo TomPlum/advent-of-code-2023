@@ -2,7 +2,7 @@ package io.github.tomplum.aoc.game.scratchcard
 
 class ScratchCardAnalyser(table: List<String>) {
 
-    val scratchCards = table.map { data ->
+    private val scratchCards = table.map { data ->
         val split = data.split("|")
         val left = split[0]
         val leftParts = left.split(": ")
@@ -10,6 +10,10 @@ class ScratchCardAnalyser(table: List<String>) {
         val id = leftParts[0].removePrefix("Card ").trim().toInt()
         val numbers = split[1].trim().split(" ").filter { value -> value.isNotBlank() }.map { value -> value.toInt() }
         ScratchCard(id, winning, numbers)
+    }
+
+    private val cardMatches = scratchCards.associate { card ->
+        card.id to card.winningNumbers.count { winning -> winning in card.numbers }
     }
 
     fun calculateTotalPoints(): Int = scratchCards.fold(0) { points, card ->
@@ -30,29 +34,19 @@ class ScratchCardAnalyser(table: List<String>) {
         points + cardPoints
     }
 
-    val cardMatches = scratchCards.associate { card ->
-        val matches = card.winningNumbers.count { winning -> winning in card.numbers }
-        card.id to matches
-    }
+    fun calculateTotalScratchCardQuantity() = cardMatches.keys
+        .sumOf { id -> extrapolateCardGeneration(id) }
+        .let { extrapolated -> extrapolated + cardMatches.keys.size }
 
-    fun calculateTotalScratchCardQuantity(): Int {
+    private fun extrapolateCardGeneration(id: Int): Int {
+        val matches = cardMatches[id]!!
+        val cardsToCopy = ((id + 1)..(matches + id)).toList()
+        var quantityCopied = cardsToCopy.size
 
-
-        val sum = cardMatches.map { (id, matches) -> extrapolateCardGeneration(id, matches) }.sum()
-
-        return sum + cardMatches.keys.size
-    }
-
-    private fun extrapolateCardGeneration(id: Int, matches: Int): Int {
-        val cardsToCopy = (id + 1)..(matches + id)
-        var copied = cardsToCopy.toList().size
-
-        copied += cardsToCopy
+        quantityCopied += cardsToCopy
             .filter { idCopied -> cardMatches.containsKey(idCopied) }
-            .sumOf { idCopied ->
-                extrapolateCardGeneration(idCopied, cardMatches[idCopied]!!)
-            }
+            .sumOf { idCopied -> extrapolateCardGeneration(idCopied) }
 
-        return copied
+        return quantityCopied
     }
 }
