@@ -12,4 +12,11 @@ class ScratchCardAnalyserTest {
         val analyser = ScratchCardAnalyser(input)
         assertThat(analyser.calculateTotalPoints()).isEqualTo(13)
     }
+
+    @Test
+    fun examplePartTwo() {
+        val input = TestInputReader.read<String>("day4/example.txt").value
+        val analyser = ScratchCardAnalyser(input)
+        assertThat(analyser.calculateTotalScratchCardQuantity()).isEqualTo(30)
+    }
 }

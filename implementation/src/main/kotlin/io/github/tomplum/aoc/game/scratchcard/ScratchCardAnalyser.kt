@@ -29,4 +29,30 @@ class ScratchCardAnalyser(table: List<String>) {
 
         points + cardPoints
     }
+
+    val cardMatches = scratchCards.associate { card ->
+        val matches = card.winningNumbers.count { winning -> winning in card.numbers }
+        card.id to matches
+    }
+
+    fun calculateTotalScratchCardQuantity(): Int {
+
+
+        val sum = cardMatches.map { (id, matches) -> extrapolateCardGeneration(id, matches) }.sum()
+
+        return sum + cardMatches.keys.size
+    }
+
+    private fun extrapolateCardGeneration(id: Int, matches: Int): Int {
+        val cardsToCopy = (id + 1)..(matches + id)
+        var copied = cardsToCopy.toList().size
+
+        copied += cardsToCopy
+            .filter { idCopied -> cardMatches.containsKey(idCopied) }
+            .sumOf { idCopied ->
+                extrapolateCardGeneration(idCopied, cardMatches[idCopied]!!)
+            }
+
+        return copied
+    }
 }
