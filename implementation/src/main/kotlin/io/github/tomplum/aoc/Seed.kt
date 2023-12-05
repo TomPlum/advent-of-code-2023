@@ -1,6 +1,6 @@
 package io.github.tomplum.aoc
 
-data class SeedAttributeMap(val category: String, val destinationRangeStart: Int, val sourceRangeStart: Int, val rangeLength: Int) {
+data class SeedAttributeMap(val category: String, val destinationRangeStart: Long, val sourceRangeStart: Long, val rangeLength: Long) {
     private val sourceRange = sourceRangeStart..<(sourceRangeStart + rangeLength)
     private val destinationRange = destinationRangeStart..<(destinationRangeStart + rangeLength)
 
@@ -8,15 +8,15 @@ data class SeedAttributeMap(val category: String, val destinationRangeStart: Int
     val sourceCategory = categoryParts.first()
     val targetCategory = categoryParts.last()
 
-    fun getSourceRange(): IntRange {
+    fun getSourceRange(): LongRange {
         return sourceRangeStart..<(sourceRangeStart + rangeLength)
     }
 
-    fun getDestinationRange(): IntRange {
+    fun getDestinationRange(): LongRange {
         return destinationRangeStart..<(destinationRangeStart + rangeLength)
     }
 
-    fun mapSeedNumber(seedNumber: Int): Int? {
+    fun mapSeedNumber(seedNumber: Long): Long? {
         if (seedNumber in sourceRange) {
             val index = sourceRange.indexOf(seedNumber)
             return destinationRange.elementAt(index)

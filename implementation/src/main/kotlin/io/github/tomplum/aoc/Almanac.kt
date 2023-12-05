@@ -3,8 +3,8 @@ package io.github.tomplum.aoc
 data class Report(val seed: Int, val values: Pair<String, Int>)
 
 class Almanac(private val data: List<String>) {
-    fun findLowestLocationNumber(): Int {
-        val seedTypes = data.first().removePrefix("seeds: ").trim().split(" ").map { value -> value.toInt() }
+    fun findLowestLocationNumber(): Long {
+        val seedTypes = data.first().removePrefix("seeds: ").trim().split(" ").map { value -> value.toLong() }
 
         val mapData = mutableListOf<List<String>>()
         var currentMap = mutableListOf<String>()
@@ -23,15 +23,15 @@ class Almanac(private val data: List<String>) {
         val categoryMaps = mapData.map { data ->
             val category = data.first().trim()
             data.drop(1).map { values ->
-                val numbers = values.trim().split(" ").map { value -> value.toInt() }
+                val numbers = values.trim().split(" ").map { value -> value.toLong() }
                 SeedAttributeMap(category, numbers[0], numbers[1], numbers[2])
             }
         }
 
-        val seedMap = mutableMapOf<Int, MutableMap<String, Int>>()
+        val seedMap = mutableMapOf<Long, MutableMap<String, Long>>()
 
         categoryMaps.forEach { categoryMap ->
-            val currentMap = mutableMapOf<Pair<Int, Int>, Int>()
+            val currentMap = mutableMapOf<Pair<Long, Long>, Long>()
 
             seedTypes.forEach { seedNumber ->
                 val sourceCategory = categoryMap.first().sourceCategory
@@ -41,7 +41,7 @@ class Almanac(private val data: List<String>) {
                     map.mapSeedNumber(mappedValue)
                 }.filterNot { it == null }
 
-                val number: Int = if (candidates.isEmpty()) mappedValue else candidates.first()!!
+                val number: Long = if (candidates.isEmpty()) mappedValue else candidates.first()!!
                 currentMap[Pair(seedNumber, mappedValue)] = number
             }
 
@@ -57,16 +57,16 @@ class Almanac(private val data: List<String>) {
             val s = 0
         }
 
-        val result = seedTypes.map { seedNumber ->
+        /*val result = seedTypes.map { seedNumber ->
             categoryMaps.map { categoryList ->
                 val candidates = categoryList.map { map ->
                     map.mapSeedNumber(seedNumber)
                 }.filterNot { it == null }
 
-                val number: Int = if (candidates.isEmpty()) seedNumber else candidates.first()!!
+                val number: Long = if (candidates.isEmpty()) seedNumber else candidates.first()!!
                 Report(seedNumber, Pair(categoryList.first().category, number))
             }
-        }
+        }*/
 
         return seedMap.map { it.value }.minOf { it["location"] ?: 0 }
     }
