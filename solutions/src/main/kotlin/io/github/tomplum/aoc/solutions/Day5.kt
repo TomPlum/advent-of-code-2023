@@ -12,4 +12,8 @@ class Day5 : Solution<Long, Long> {
     override fun part1(): Long {
         return almanac.findLowestLocationNumber()
     }
+
+    override fun part2(): Long? {
+        return almanac.findLowestLocationNumberSeedRange()
+    }
 }

@@ -14,4 +14,11 @@ class AlmanacTest {
         val lowestLocationNumber = almanac.findLowestLocationNumber()
         assertThat(lowestLocationNumber).isEqualTo(35)
     }
+
+    @Test
+    fun examplePartTwo() {
+        val almanac = Almanac(input)
+        val lowestLocationNumber = almanac.findLowestLocationNumberSeedRange()
+        assertThat(lowestLocationNumber).isEqualTo(46)
+    }
 }
