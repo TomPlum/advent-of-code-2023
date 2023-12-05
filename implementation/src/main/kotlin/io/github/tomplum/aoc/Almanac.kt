@@ -29,7 +29,8 @@ class Almanac(private val data: List<String>) {
         val seedMap = mutableMapOf<Long, MutableMap<String, Long>>()
 
         categoryMaps.forEach { categoryMap ->
-            val currentMap = mutableMapOf<Long, Long>()
+            // Original seed number -> (category) number
+            val seedValueMap = mutableMapOf<Long, Long>()
 
             seedTypes.forEach { seedNumber ->
                 val sourceCategory = categoryMap.first().sourceCategory
@@ -40,15 +41,17 @@ class Almanac(private val data: List<String>) {
                 }.filterNot { it == null }
 
                 val number: Long = if (candidates.isEmpty()) mappedValue else candidates.first()!!
-                currentMap[seedNumber] = number
+                seedValueMap[seedNumber] = number
             }
 
-            currentMap.forEach { (seedNumber, mapping) ->
+            seedValueMap.forEach { (seedNumber, mapping) ->
+                val targetCategory = categoryMap.first().targetCategory
+
                 if (seedMap.containsKey(seedNumber)) {
                     val innerMap = seedMap[seedNumber]
-                    innerMap?.put(categoryMap.first().targetCategory, mapping)
+                    innerMap?.put(targetCategory, mapping)
                 } else {
-                    seedMap[seedNumber] = mutableMapOf(Pair(categoryMap.first().targetCategory, mapping))
+                    seedMap[seedNumber] = mutableMapOf(Pair(targetCategory, mapping))
                 }
             }
         }
