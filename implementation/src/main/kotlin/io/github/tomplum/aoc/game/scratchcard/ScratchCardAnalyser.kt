@@ -21,16 +21,13 @@ class ScratchCardAnalyser(table: List<String>) {
         card.id to card.winningNumbers.count { winning -> winning in card.numbers }
     }
 
-    fun calculateTotalPoints(): Int = scratchCards.fold(0) { points, card ->
-        var cardPoints = 0
-
-        card.winningNumbers.forEach { winning ->
+    fun calculateTotalPoints(): Int = scratchCards.fold(0) { totalPoints, card ->
+        totalPoints + card.winningNumbers.fold(0) { cardPoints, winning ->
             if (winning in card.numbers) {
-                if (cardPoints == 0) cardPoints += 1 else cardPoints *= 2
-            }
+                if (cardPoints == 0) cardPoints + 1
+                else cardPoints * 2
+            } else cardPoints
         }
-
-        points + cardPoints
     }
 
     fun calculateTotalScratchCardQuantity() = cardMatches.keys
