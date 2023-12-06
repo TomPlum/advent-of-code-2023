@@ -13,4 +13,10 @@ class BoatRaceSimulatorTest {
         val simulator = BoatRaceSimulator(input)
         assertThat(simulator.calculateWinningMethodQuantityProduct()).isEqualTo(288)
     }
+
+    @Test
+    fun examplePartTwo() {
+        val simulator = BoatRaceSimulator(input)
+        assertThat(simulator.calculateWinningMethodQuantityProductNewStrategy()).isEqualTo(71503)
+    }
 }
