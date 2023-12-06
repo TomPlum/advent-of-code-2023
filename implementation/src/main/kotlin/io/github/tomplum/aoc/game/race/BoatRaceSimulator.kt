@@ -34,18 +34,18 @@ class BoatRaceSimulator(document: List<String>) {
         .dropWhile { char -> char == ' ' }
         .replace(" ", "")
         .trim()
-        .toInt()
+        .toLong()
 
     private val singleRaceDistance = document.last()
         .removePrefix("Distance:")
         .dropWhile { char -> char == ' ' }
         .replace(" ", "")
         .trim()
-        .toInt()
+        .toLong()
 
     // TODO: Rename stuff
-    fun calculateWinningMethodQuantityProductNewStrategy(): Int = (0..singleRaceTime).map { timeSpentChargingSpeed ->
+    fun calculateWinningMethodQuantityProductNewStrategy(): Long = (0..singleRaceTime).map { timeSpentChargingSpeed ->
         val timeLeftToMove = singleRaceTime - timeSpentChargingSpeed
         timeSpentChargingSpeed * timeLeftToMove
-    }.count { distance -> distance > singleRaceDistance }
+    }.count { distance -> distance > singleRaceDistance }.toLong()
 }
