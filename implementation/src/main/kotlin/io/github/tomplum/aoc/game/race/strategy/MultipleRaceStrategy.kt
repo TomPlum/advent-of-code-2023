@@ -1,6 +1,6 @@
 package io.github.tomplum.aoc.game.race.strategy
 
-import io.github.tomplum.aoc.game.race.Race
+import io.github.tomplum.aoc.game.race.RaceRecord
 import io.github.tomplum.libs.extensions.product
 
 class MultipleRaceStrategy(document: List<String>) : RaceSimulationStrategy {
@@ -17,7 +17,7 @@ class MultipleRaceStrategy(document: List<String>) : RaceSimulationStrategy {
         .map { value -> value.toInt() }
 
     private val races = times.mapIndexed { iTime, time ->
-        Race(time, distances[iTime])
+        RaceRecord(time, distances[iTime])
     }
 
     override fun calculateWinningMethodQuantityProduct(): Long = races.map { (duration, recordDistance) ->
