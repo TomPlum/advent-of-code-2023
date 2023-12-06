@@ -2,21 +2,26 @@ package io.github.tomplum.aoc.game.race
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import io.github.tomplum.aoc.game.race.strategy.MultipleRaceStrategy
+import io.github.tomplum.aoc.game.race.strategy.SingleRaceStrategy
 import io.github.tomplum.aoc.input.TestInputReader
 import org.junit.jupiter.api.Test
 
 class BoatRaceSimulatorTest {
-    private val input = TestInputReader.read<String>("day6/example.txt").value
+    private val document = TestInputReader.read<String>("day6/example.txt").value
+    private val simulator = BoatRaceSimulator()
 
     @Test
     fun examplePartOne() {
-        val simulator = BoatRaceSimulator(input)
-        assertThat(simulator.calculateWinningMethodQuantityProduct()).isEqualTo(288)
+        val strategy = MultipleRaceStrategy(document)
+        val winningMethodsProduct = simulator.calculateWinningMethods(strategy)
+        assertThat(winningMethodsProduct).isEqualTo(288)
     }
 
     @Test
     fun examplePartTwo() {
-        val simulator = BoatRaceSimulator(input)
-        assertThat(simulator.calculateWinningMethodQuantityProductNewStrategy()).isEqualTo(71503)
+        val strategy = SingleRaceStrategy(document)
+        val winningMethods = simulator.calculateWinningMethods(strategy)
+        assertThat(winningMethods).isEqualTo(71503)
     }
 }
