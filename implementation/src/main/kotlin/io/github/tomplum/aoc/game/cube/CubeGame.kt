@@ -1,4 +1,4 @@
-package io.github.tomplum.aoc.game
+package io.github.tomplum.aoc.game.cube
 
 class CubeGame(record: List<String>) {
 
