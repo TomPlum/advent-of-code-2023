@@ -8,7 +8,7 @@ class BoatRaceSimulator(document: List<String>) {
 
     private val times = document.first()
         .removePrefix("Time:").dropWhile { char -> char == ' ' }
-        .replace("   ", " ").replace("  ", " ")
+        .replace("     ", " ").replace("    ", " ").replace("   ", " ").replace("  ", " ")
         .trim().split(" ")
         .map { value -> value.toInt() }
 
