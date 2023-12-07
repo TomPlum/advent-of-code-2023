@@ -16,6 +16,13 @@ class CamelCardsTest {
         assertThat(cards.calculateTotalWinnings()).isEqualTo(6440)
     }
 
+    @Test
+    fun examplePartTwo() {
+        val input = TestInputReader.read<String>("day7/example.txt").value
+        val cards = CamelCards(input)
+        assertThat(cards.calculateTotalWinningsWithJoker()).isEqualTo(5905)
+    }
+
     @Nested
     inner class ParseHandType {
         private val cards = CamelCards(listOf())
