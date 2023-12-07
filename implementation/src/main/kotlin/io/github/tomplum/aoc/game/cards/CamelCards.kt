@@ -13,9 +13,10 @@ class CamelCards(cardsData: List<String>) {
 
     fun calculateTotalWinnings(): Int {
         val ordered = hands.entries.fold(mutableMapOf<HandType, List<String>>()) { acc, (hand, bid) ->
-            val list = acc.computeIfAbsent(hand.parseHandType()) { _ -> mutableListOf() }.toMutableList()
+            val handType = parseHandType(hand)
+            val list = acc.computeIfAbsent(handType) { _ -> mutableListOf() }.toMutableList()
             list.add(hand)
-            acc[hand.parseHandType()] = list
+            acc[handType] = list
             acc
         }
 
@@ -43,20 +44,20 @@ class CamelCards(cardsData: List<String>) {
             .sumOf { (rank, hand) -> rank * hands[hand]!!.toInt() }
     }
 
-    private fun String.parseHandType(): HandType {
-        if (this.all { card -> card == this[0] }) {
+    fun parseHandType(hand: String): HandType {
+        if (hand.all { card -> card == hand[0] }) {
             return HandType.FIVE_OF_A_KIND
-        } else if (this.isNofKind(4)) {
+        } else if (hand.isNofKind(4)) {
             return HandType.FOUR_OF_A_KIND
-        } else if (this.isNofKind(3)) {
+        } else if (hand.groupBy { it }.filter { it.value.size > 1 }.size == 1 && hand.groupBy { it }.values.size == 3) {
             return HandType.THREE_OF_A_KIND
-        } else if (this.isNofKind(3) && this.isNofKind(2)) {
+        } else if (hand.isNofKind(3) && hand.isNofKind(2)) {
             return HandType.FULL_HOUSE
-        } else if (this.groupBy { it }.count { it.value.size == 2 } == 2) {
+        } else if (hand.groupBy { it }.count { it.value.size == 2 } == 2) {
             return HandType.TWO_PAIR
-        } else if (this.groupBy { it }.count { it.value.size == 2 } == 1) {
+        } else if (hand.groupBy { it }.count { it.value.size == 2 } == 1) {
             return HandType.ONE_PAIR
-        } else if (this.toList().distinct().size == this.length) {
+        } else if (hand.toList().distinct().size == hand.length) {
             return HandType.HIGH_CARD
         } else {
             return HandType.NO_HAND
