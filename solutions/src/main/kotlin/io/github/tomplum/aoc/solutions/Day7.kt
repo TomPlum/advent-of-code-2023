@@ -12,4 +12,8 @@ class Day7 : Solution<Int, Int> {
     override fun part1(): Int {
         return camelCards.calculateTotalWinnings()
     }
+
+    override fun part2(): Int {
+        return camelCards.calculateTotalWinningsWithJoker()
+    }
 }
