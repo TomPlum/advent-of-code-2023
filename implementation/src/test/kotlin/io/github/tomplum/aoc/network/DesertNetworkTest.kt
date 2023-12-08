@@ -19,4 +19,11 @@ class DesertNetworkTest {
         val network = DesertNetwork(input.value)
         assertThat(network.stepsRequiredToReachEnd()).isEqualTo(6)
     }
+
+    @Test
+    fun exampleOnePartTwo() {
+        val input = TestInputReader.read<String>("day8/example-3.txt")
+        val network = DesertNetwork(input.value)
+        assertThat(network.stepsRequiredToReachAllEnds()).isEqualTo(6)
+    }
 }

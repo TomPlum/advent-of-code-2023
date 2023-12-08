@@ -27,4 +27,27 @@ class DesertNetwork(documents: List<String>) {
 
         return stepsTaken
     }
+
+    fun stepsRequiredToReachAllEnds(): Int {
+        val startingNodes = nodes.keys.filter { node -> node.last() == 'A' }
+        val finishingNodes = nodes.keys.filter { node -> node.last() == 'Z' }
+
+        val currentPosition = startingNodes.associateWith { node -> node }.toMutableMap()
+        val stepsTaken = startingNodes.associateWith { _ -> 0 }.toMutableMap()
+
+        currentPosition.keys.forEach { node ->
+            while (currentPosition[node]!!.last() != 'Z') {
+                directions.forEach { direction ->
+                    currentPosition[node] = if (direction == 'R') {
+                        nodes[currentPosition[node]]!!.second
+                    } else {
+                        nodes[currentPosition[node]]!!.first
+                    }
+                    stepsTaken[node] = (stepsTaken[node] ?: 0) + 1
+                }
+            }
+        }
+
+        return stepsTaken.values.max()
+    }
 }
