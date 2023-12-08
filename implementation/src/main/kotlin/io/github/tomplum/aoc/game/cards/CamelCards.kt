@@ -147,29 +147,7 @@ class CamelCards(cardsData: List<String>) {
         }
     }
 
-    private fun String.determineBestJokerHand(): HandType {
-        val indexes = this
-            .mapIndexedNotNull { i, card -> if (card == 'J') i else null  }
-
-        val jokerHands = jokerHands(listOf(this))
-
-      /*  val s = this
-            .mapIndexedNotNull { i, card -> if (card == 'J') i else null  }
-            .flatMap { jokerIndex ->
-                val hands = suitsWithJoker.map { suit ->
-                    this.replaceRange(jokerIndex, jokerIndex + 1, suit.toString())
-                }
-
-                indexes.flatMap { nestedIndex ->
-                    suitsWithJoker.map { suit ->
-                        this.replaceRange(jokerIndex, jokerIndex + 1, suit.toString())
-                    }
-                }
-            }
-            .map { hand -> parseHandType(hand) }
-            .maxBy { handType -> handType.strength }*/
-
-        return jokerHands.map { hand -> parseHandType(hand) }
-            .maxBy { handType -> handType.strength }
-    }
+    private fun String.determineBestJokerHand() = jokerHands(listOf(this))
+        .map { hand -> parseHandType(hand) }
+        .maxBy { handType -> handType.strength }
 }
