@@ -51,7 +51,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 04  | 27454         | 253μs    | 6857330        | 444ms    | [Scratchcards](docs/DAY04.MD)      |
 | 05  | -             | -        | -              | -        | [](docs/DAY05.MD)                  |
 | 06  | -             | -        | -              | -        | [](docs/DAY06.MD)                  |
-| 07  | -             | -        | -              | -        | [](docs/DAY07.MD)                  |
+| 07  | 250232501     | 15ms     | 249138943      | 2s 786ms | [Camel Cards](docs/DAY07.MD)       |
 | 08  | 12169         | 1ms      | 12030780859469 | 31ms     | [Haunted Wasteland](docs/DAY08.MD) |
 | 09  | -             | -        | -              | -        | [](docs/DAY09.MD)                  |
 | 10  | -             | -        | -              | -        | [](docs/DAY10.MD)                  |
