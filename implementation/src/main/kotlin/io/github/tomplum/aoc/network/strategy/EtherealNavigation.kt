@@ -1,5 +1,7 @@
 package io.github.tomplum.aoc.network.strategy
 
+import io.github.tomplum.libs.extensions.lcm
+
 class EtherealNavigation(documents: List<String>) : NetworkNavigationStrategy(documents) {
     override fun navigate(): Long {
         val startingNodes = nodes.keys.filter { node -> node.last() == 'A' }
@@ -27,23 +29,5 @@ class EtherealNavigation(documents: List<String>) : NetworkNavigationStrategy(do
         }
 
         return endingSnapshots.values.toList().lcm()
-    }
-
-    // TODO: move to lib and replace
-    fun List<Long>.lcm(): Long {
-        var result = this[0]
-        this.forEachIndexed { i, _ -> result = lcm(result, this[i]) }
-        return result
-    }
-
-    private fun lcm(a: Long, b: Long) = a * (b / gcd(a, b))
-
-    private fun gcd(a: Long, b: Long): Long {
-        var n1 = a
-        var n2 = b
-        while (n1 != n2) {
-            if (n1 > n2) n1 -= n2 else n2 -= n1
-        }
-        return n1
     }
 }
