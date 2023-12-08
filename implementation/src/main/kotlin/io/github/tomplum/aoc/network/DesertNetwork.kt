@@ -28,16 +28,21 @@ class DesertNetwork(documents: List<String>) {
         return stepsTaken
     }
 
-    fun stepsRequiredToReachAllEnds(): Int {
+    fun stepsRequiredToReachAllEnds(): Long {
         val startingNodes = nodes.keys.filter { node -> node.last() == 'A' }
-        val finishingNodes = nodes.keys.filter { node -> node.last() == 'Z' }
 
         val currentPosition = startingNodes.associateWith { node -> node }.toMutableMap()
-        val stepsTaken = startingNodes.associateWith { _ -> 0 }.toMutableMap()
+        val stepsTaken = startingNodes.associateWith { _ -> 0L }.toMutableMap()
 
-        currentPosition.keys.forEach { node ->
-            while (currentPosition[node]!!.last() != 'Z') {
-                directions.forEach { direction ->
+        val endingSnapshots = startingNodes.associateWith { _ -> 0L }.toMutableMap()
+
+        while (endingSnapshots.values.any { it == 0L }) {
+            directions.forEach { direction ->
+                currentPosition.keys.forEach { node ->
+                    if (currentPosition[node]!!.last() == 'Z') {
+                        endingSnapshots[node] = stepsTaken[node]!!
+                    }
+
                     currentPosition[node] = if (direction == 'R') {
                         nodes[currentPosition[node]]!!.second
                     } else {
@@ -48,6 +53,24 @@ class DesertNetwork(documents: List<String>) {
             }
         }
 
-        return stepsTaken.values.max()
+        return endingSnapshots.values.toList().lcm()
+    }
+
+    // TODO: move to lib and replace
+    fun List<Long>.lcm(): Long {
+        var result = this[0]
+        this.forEachIndexed { i, _ -> result = lcm(result, this[i]) }
+        return result
+    }
+
+    private fun lcm(a: Long, b: Long) = a * (b / gcd(a, b))
+
+    private fun gcd(a: Long, b: Long): Long {
+        var n1 = a
+        var n2 = b
+        while (n1 != n2) {
+            if (n1 > n2) n1 -= n2 else n2 -= n1
+        }
+        return n1
     }
 }
