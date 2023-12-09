@@ -12,4 +12,8 @@ class Day9 : Solution<Int, Int> {
     override fun part1(): Int {
         return oasis.extrapolateFromHistory()
     }
+
+    override fun part2(): Int {
+        return oasis.extrapolateBackwards()
+    }
 }
