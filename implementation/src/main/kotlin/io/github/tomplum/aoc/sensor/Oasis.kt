@@ -1,67 +1,34 @@
 package io.github.tomplum.aoc.sensor
 
 class Oasis(private val report: List<String>) {
-    fun extrapolateFromHistory(): Int {
-        val sum = report.map { line ->
-            val values = line.trim().split(" ").map { value -> value.toInt() }
-            val extrapolated = extrapolateHistory(values).reversed().toMutableList()
-            extrapolated.add(values)
-            extrapolated
-        }.sumOf { sequences ->
-            val last = sequences.map { it.last() }
-            var currentValue = 0
-            last.forEach { value ->
-                if (value != 0) {
-                    currentValue += value
-                }
-            }
-            currentValue
-        }
-        return sum
-    }
-    fun extrapolateBackwards(): Int {
-        val sum = report.map { line ->
-            val values = line.trim().split(" ").map { value -> value.toInt() }.reversed()
-            val extrapolated = extrapolateHistoryBackwards(values).reversed().toMutableList()
-            extrapolated.add(values)
-            extrapolated
-        }.sumOf { sequences ->
-            val last = sequences.map { value -> value.last() }
-            var currentValue = 0
-
-            last.forEach { value ->
-                currentValue = value - currentValue
-            }
-
-            currentValue
-        }
-        return sum
+    fun extrapolateForwards(): Int = report.map { line ->
+        val values = line.trim().split(" ").map { value -> value.toInt() }
+        val extrapolated = extrapolateHistory(values) { (a, b) -> b - a }.reversed().toMutableList()
+        extrapolated.add(values)
+        extrapolated
+    }.sumOf { sequences -> sequences
+        .map { value -> value.last() }
+        .fold(0) { extrapolated, value -> value + extrapolated }.toInt()
     }
 
-    private fun extrapolateHistory(values: List<Int>): MutableList<List<Int>> {
+    fun extrapolateBackwards(): Int = report.map { line ->
+        val values = line.trim().split(" ").map { value -> value.toInt() }.reversed()
+        val extrapolated = extrapolateHistory(values){ (a, b) -> a - b }.reversed().toMutableList()
+        extrapolated.add(values)
+        extrapolated
+    }.sumOf { sequences -> sequences
+        .map { value -> value.last() }
+        .fold(0) { extrapolated, value -> value - extrapolated }.toInt()
+    }
+
+    private fun extrapolateHistory(values: List<Int>, comparator: (values: List<Int>) -> Int): MutableList<List<Int>> {
         val result = mutableListOf<List<Int>>()
 
         if (values.any { value -> value != 0 }) {
-            val deltas = values.windowed(2) { (a, b) -> b - a }
+            val deltas = values.windowed(2, transform =  comparator)
             result.add(deltas)
 
-            val extrapolated = extrapolateHistory(deltas)
-            if (extrapolated.isNotEmpty()) {
-                result += extrapolated
-            }
-        }
-
-        return result
-    }
-
-    private fun extrapolateHistoryBackwards(values: List<Int>): MutableList<List<Int>> {
-        val result = mutableListOf<List<Int>>()
-
-        if (values.any { value -> value != 0 }) {
-            val deltas = values.windowed(2) { (a, b) -> a - b }
-            result.add(deltas)
-
-            val extrapolated = extrapolateHistoryBackwards(deltas)
+            val extrapolated = extrapolateHistory(deltas, comparator)
             if (extrapolated.isNotEmpty()) {
                 result += extrapolated
             }

@@ -11,7 +11,7 @@ class OasisTest {
 
     @Test
     fun examplePartOne() {
-        assertThat(oasis.extrapolateFromHistory()).isEqualTo(114)
+        assertThat(oasis.extrapolateForwards()).isEqualTo(114)
     }
 
     @Test

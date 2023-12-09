@@ -10,7 +10,7 @@ class Day9 : Solution<Int, Int> {
     private val oasis = Oasis(input)
 
     override fun part1(): Int {
-        return oasis.extrapolateFromHistory()
+        return oasis.extrapolateForwards()
     }
 
     override fun part2(): Int {
