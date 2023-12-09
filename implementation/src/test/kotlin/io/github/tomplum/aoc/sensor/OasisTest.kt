@@ -13,4 +13,9 @@ class OasisTest {
     fun examplePartOne() {
         assertThat(oasis.extrapolateFromHistory()).isEqualTo(114)
     }
+
+    @Test
+    fun examplePartTwo() {
+        assertThat(oasis.extrapolateBackwards()).isEqualTo(2)
+    }
 }

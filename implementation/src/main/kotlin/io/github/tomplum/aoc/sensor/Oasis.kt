@@ -19,6 +19,24 @@ class Oasis(private val report: List<String>) {
         }
         return sum
     }
+    fun extrapolateBackwards(): Int {
+        val sum = report.map { line ->
+            val values = line.trim().split(" ").map { value -> value.toInt() }.reversed()
+            val extrapolated = extrapolateHistoryBackwards(values).reversed().toMutableList()
+            extrapolated.add(values)
+            extrapolated
+        }.sumOf { sequences ->
+            val last = sequences.map { value -> value.last() }
+            var currentValue = 0
+
+            last.forEach { value ->
+                currentValue = value - currentValue
+            }
+
+            currentValue
+        }
+        return sum
+    }
 
     private fun extrapolateHistory(values: List<Int>): MutableList<List<Int>> {
         val result = mutableListOf<List<Int>>()
@@ -28,6 +46,22 @@ class Oasis(private val report: List<String>) {
             result.add(deltas)
 
             val extrapolated = extrapolateHistory(deltas)
+            if (extrapolated.isNotEmpty()) {
+                result += extrapolated
+            }
+        }
+
+        return result
+    }
+
+    private fun extrapolateHistoryBackwards(values: List<Int>): MutableList<List<Int>> {
+        val result = mutableListOf<List<Int>>()
+
+        if (values.any { value -> value != 0 }) {
+            val deltas = values.windowed(2) { (a, b) -> a - b }
+            result.add(deltas)
+
+            val extrapolated = extrapolateHistoryBackwards(deltas)
             if (extrapolated.isNotEmpty()) {
                 result += extrapolated
             }
