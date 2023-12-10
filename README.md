@@ -50,7 +50,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 03  | 531561        | 8ms      | 83279367       | 36ms     | [Gear Ratios](docs/DAY03.MD)        |
 | 04  | 27454         | 253μs    | 6857330        | 444ms    | [Scratchcards](docs/DAY04.MD)       |
 | 05  | -             | -        | -              | -        | [](docs/DAY05.MD)                   |
-| 06  | -             | -        | -              | -        | [](docs/DAY06.MD)                   |
+| 06  | 1413720       | 627μs    | 30565288       | 787ms    | [Wait For It](docs/DAY06.MD)        |
 | 07  | 250232501     | 15ms     | 249138943      | 2s 786ms | [Camel Cards](docs/DAY07.MD)        |
 | 08  | 12169         | 1ms      | 12030780859469 | 31ms     | [Haunted Wasteland](docs/DAY08.MD)  |
 | 09  | 2098530125    | 4ms      | 1016           | 2ms      | [Mirage Maintenance](docs/DAY09.MD) |
