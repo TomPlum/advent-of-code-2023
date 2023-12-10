@@ -21,84 +21,14 @@ class PipeMaze(data: List<String>) : AdventMap2D<PipeMazeTile>() {
         }
     }
 
+    private val traversalResult = traversePipeLoop()
+
     fun calculateStepsToFarthestPosition(): Int {
-        val start = filterTiles { tile -> tile.isStartingPosition() }.entries.first()
-
-        val candidates = mutableListOf(start.key)
-
-        // TODO: make programmatic
-        addTile(start.key, PipeMazeTile('F'))
-
-        var steps = 0
-        val seen = mutableMapOf<Point2D, PipeMazeTile>()
-
-        while(candidates.isNotEmpty()) {
-            val traversableTiles = candidates.map { current ->
-                val currentTile = getTile(current)
-                val adj = filterPoints(current.orthogonallyAdjacent().toSet())
-                    .filterNot { it.value.isGround() }
-                    .filter { it.key !in seen }
-
-                adj.filter { (targetPos, targetTile) ->
-                    val direction = if (current.x == targetPos.x) {
-                        current.yRelativeDirection(targetPos)
-                    } else {
-                        targetPos.xRelativeDirection(current)
-                    }!!.first
-
-                    currentTile.canConnectTo(targetTile, direction)
-                }
-            }
-
-            candidates.clear()
-
-            seen.putAll(traversableTiles.flatMap { it.map { it.toPair() } })
-            if (traversableTiles.isNotEmpty()) {
-                steps++
-            }
-            candidates.addAll(traversableTiles.flatMap { it.keys })
-        }
-
-        return steps // TODO: Fix off by one error
+        return traversalResult.second
     }
 
     fun determinePointsInsidePipeLoop(): Int {
-        val start = filterTiles { tile -> tile.isStartingPosition() }.entries.first()
-
-        val candidates = mutableListOf(start.key)
-
-        // TODO: make programmatic
-        addTile(start.key, PipeMazeTile('F'))
-
-        var steps = 0
-        val seen = mutableMapOf<Point2D, PipeMazeTile>()
-
-        while(candidates.isNotEmpty()) {
-            val traversableTiles = candidates.map { current ->
-                val currentTile = getTile(current)
-                val adj = filterPoints(current.orthogonallyAdjacent().toSet())
-                    .filterNot { it.value.isGround() }
-                    .filter { it.key !in seen }
-
-                adj.filter { (targetPos, targetTile) ->
-                    val direction = if (current.x == targetPos.x) {
-                        current.yRelativeDirection(targetPos)
-                    } else {
-                        targetPos.xRelativeDirection(current)
-                    }!!.first
-
-                    currentTile.canConnectTo(targetTile, direction)
-                }
-            }
-
-            candidates.clear()
-
-            seen.putAll(traversableTiles.flatMap { it.map { it.toPair() } })
-            if (traversableTiles.isNotEmpty()) {
-                steps++
-            }
-            candidates.addAll(traversableTiles.flatMap { it.keys })
-        }
+        val seen = traversalResult.first
 
         val xMin = seen.minBy { it.key.x }.key.x
         val xMax = seen.maxBy { it.key.x }.key.x
@@ -109,21 +39,59 @@ class PipeMaze(data: List<String>) : AdventMap2D<PipeMazeTile>() {
             (yMin..yMax).map { y ->
                 Point2D(x, y)
             }
-        }.filter { getTile(it).isGround() }
+        }.filterNot { point -> point in seen }
 
-        // 46 pipe tiles in boundary, 28 vertical ones
         val verticalBoundaryTiles = seen
             .filter { it.value.type in listOf(PipeType.VERTICAL, PipeType.NORTH_EAST_RIGHT_ANGLE, PipeType.NORTH_WEST_RIGHT_ANGLE) }
 
-        val innerPoints = getDataMap().entries.filter { it.key !in seen }.map { it.key }.filter { candidate ->
-            val boundaryCollisions = (candidate.x..xMax()!!).filter {
+        return candidatePoints.count { candidate ->
+            val boundaryCollisions = (candidate.x..xMax()!!).count {
                 Point2D(it, candidate.y) in verticalBoundaryTiles
             }
 
-            boundaryCollisions.size % 2 != 0
+            boundaryCollisions % 2 != 0
+        }
+    }
+
+    private fun traversePipeLoop(): Pair<Map<Point2D, PipeMazeTile>, Int> {
+        val start = filterTiles { tile -> tile.isStartingPosition() }.entries.first()
+
+        val candidates = mutableListOf(start.key)
+
+        // TODO: make programmatic
+        addTile(start.key, PipeMazeTile('F'))
+
+        var steps = 0
+        val seen = mutableMapOf<Point2D, PipeMazeTile>()
+
+        while(candidates.isNotEmpty()) {
+            val traversableTiles = candidates.map { current ->
+                val currentTile = getTile(current)
+                val adj = filterPoints(current.orthogonallyAdjacent().toSet())
+                    .filterNot { it.value.isGround() }
+                    .filter { it.key !in seen }
+
+                adj.filter { (targetPos, targetTile) ->
+                    val direction = if (current.x == targetPos.x) {
+                        current.yRelativeDirection(targetPos)
+                    } else {
+                        targetPos.xRelativeDirection(current)
+                    }!!.first
+
+                    currentTile.canConnectTo(targetTile, direction)
+                }
+            }
+
+            candidates.clear()
+
+            seen.putAll(traversableTiles.flatMap { it.map { it.toPair() } })
+            if (traversableTiles.any { it.isNotEmpty() }) {
+                steps++
+            }
+            candidates.addAll(traversableTiles.flatMap { it.keys })
         }
 
-        return innerPoints.size // TODO: Fix off by one error
+        return seen to steps
     }
 
     private fun determineStartingTilePipeType(start: Point2D): PipeType {
