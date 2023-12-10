@@ -19,4 +19,11 @@ class PipeMazeTest {
         val pipeMaze = PipeMaze(input.value)
         assertThat(pipeMaze.calculateStepsToFarthestPosition()).isEqualTo(8)
     }
+
+    @Test
+    fun exampleThreePartTwo() {
+        val input = TestInputReader.read<String>("day10/example-3.txt")
+        val pipeMaze = PipeMaze(input.value)
+        assertThat(pipeMaze.determinePointsInsidePipeLoop()).isEqualTo(4)
+    }
 }
