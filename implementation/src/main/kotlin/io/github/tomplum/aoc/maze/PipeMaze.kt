@@ -45,10 +45,11 @@ class PipeMaze(data: List<String>) : AdventMap2D<PipeMazeTile>() {
             .filter { it.value.type in listOf(PipeType.VERTICAL, PipeType.NORTH_EAST_RIGHT_ANGLE, PipeType.NORTH_WEST_RIGHT_ANGLE) }
 
         return candidatePoints.count { candidate ->
-            val boundaryCollisions = (candidate.x..xMax()!!).count {
-                Point2D(it, candidate.y) in verticalBoundaryTiles
+            val boundaryCollisions = (candidate.x..xMax()!!).count { x ->
+                Point2D(x, candidate.y) in verticalBoundaryTiles
             }
 
+            // Add odd number of collisions means the point is inside
             boundaryCollisions % 2 != 0
         }
     }
@@ -67,19 +68,19 @@ class PipeMaze(data: List<String>) : AdventMap2D<PipeMazeTile>() {
         while(candidates.isNotEmpty()) {
             val traversableTiles = candidates.map { current ->
                 val currentTile = getTile(current)
-                val adj = filterPoints(current.orthogonallyAdjacent().toSet())
-                    .filterNot { it.value.isGround() }
-                    .filter { it.key !in seen }
 
-                adj.filter { (targetPos, targetTile) ->
-                    val direction = if (current.x == targetPos.x) {
-                        current.yRelativeDirection(targetPos)
-                    } else {
-                        targetPos.xRelativeDirection(current)
-                    }!!.first
+                filterPoints(current.orthogonallyAdjacent().toSet())
+                    .filterNot { (_, tile) -> tile.isGround() }
+                    .filter { (pos) -> pos !in seen }
+                    .filter { (targetPos, targetTile) ->
+                        val direction = if (current.x == targetPos.x) {
+                            current.yRelativeDirection(targetPos)
+                        } else {
+                            targetPos.xRelativeDirection(current)
+                        }!!.first
 
-                    currentTile.canConnectTo(targetTile, direction)
-                }
+                        currentTile.canConnectTo(targetTile, direction)
+                    }
             }
 
             candidates.clear()

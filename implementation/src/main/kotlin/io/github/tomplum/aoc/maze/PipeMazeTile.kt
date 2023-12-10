@@ -4,18 +4,6 @@ import io.github.tomplum.libs.math.Direction
 import io.github.tomplum.libs.math.map.MapTile
 
 class PipeMazeTile(override val value: Char) : MapTile<Char>(value) {
-    fun isVerticalPipe() = value == '|'
-
-    fun isHorizontalPipe() = value == '-'
-
-    fun isNorthEastBend() = value == 'L'
-
-    fun isNorthWestBend() = value == 'J'
-
-    fun isSouthWestBend() = value == '7'
-
-    fun isSouthEastBend() = value == 'F'
-
     fun isGround() = value == '.'
 
     fun isStartingPosition() = value == 'S'
