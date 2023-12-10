@@ -1,6 +1,6 @@
 # :christmas_tree: Advent of Code 2023
 
-![GitHub](https://img.shields.io/badge/stars-18%2F50-yellow)
+![GitHub](https://img.shields.io/badge/stars-20%2F50-yellow)
 
 ## What is Advent of Code?
 
@@ -54,7 +54,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 07  | 250232501     | 15ms     | 249138943      | 2s 786ms | [Camel Cards](docs/DAY07.MD)        |
 | 08  | 12169         | 1ms      | 12030780859469 | 31ms     | [Haunted Wasteland](docs/DAY08.MD)  |
 | 09  | 2098530125    | 4ms      | 1016           | 2ms      | [Mirage Maintenance](docs/DAY09.MD) |
-| 10  | -             | -        | -              | -        | [](docs/DAY10.MD)                   |
+| 10  | 6856          | 4μs      | 501            | 799ms    | [Pipe Maze](docs/DAY10.MD)          |
 | 11  | -             | -        | -              | -        | [](docs/DAY11.MD)                   |
 | 12  | -             | -        | -              | -        | [](docs/DAY12.MD)                   |
 | 13  | -             | -        | -              | -        | [](docs/DAY13.MD)                   |
