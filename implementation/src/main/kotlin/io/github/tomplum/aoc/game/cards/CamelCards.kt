@@ -43,16 +43,14 @@ class CamelCards(cardsData: List<String>) {
             .sumOf { (rank, hand) -> rank * hands[hand]!!.toInt() }
     }
 
-    fun calculateTotalWinningsWithJoker(): Int {
-        val ordered = hands.entries.fold(mutableMapOf<HandType, List<String>>()) { acc, (hand, bid) ->
+    fun calculateTotalWinningsWithJoker(): Int = hands.entries
+        .fold(mutableMapOf<HandType, List<String>>()) { acc, (hand) ->
             val handType = if (hand.any { it == 'J' }) hand.determineBestJokerHand() else parseHandType(hand)
             val list = acc.computeIfAbsent(handType) { _ -> mutableListOf() }.toMutableList()
             list.add(hand)
             acc[handType] = list
             acc
-        }
-
-        return ordered.map {
+        }.map {
             if (it.value.size > 1) {
                 val sorted = it.value.sortedWith { o1, o2 ->
                     val (stronger) = Pair(o1, o2).compareHandsWithJoker()
@@ -76,7 +74,7 @@ class CamelCards(cardsData: List<String>) {
         .reversed()
         .mapIndexed { i, hand -> (i + 1) to hand }
         .sumOf { (rank, hand) -> rank * hands[hand]!!.toInt() }
-    }
+
 
     fun parseHandType(hand: String): HandType {
         if (hand.all { card -> card == hand[0] }) {
@@ -100,6 +98,7 @@ class CamelCards(cardsData: List<String>) {
 
     private fun String.isNofKind(n: Int) = this.groupBy { it }.any { it.value.size == n }
 
+    // TODO: Refactor into strategies
     private fun Pair<String, String>.compareHands(): List<String> {
         (0..<this.first.length).forEach { i ->
             if (this.first[i] != this.second[i]) {
