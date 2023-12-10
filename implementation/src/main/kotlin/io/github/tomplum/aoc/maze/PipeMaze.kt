@@ -111,15 +111,19 @@ class PipeMaze(data: List<String>) : AdventMap2D<PipeMazeTile>() {
             }
         }.filter { getTile(it).isGround() }
 
-        val innerPoints = candidatePoints.count { candidate ->
-            val boundaryCollisions = (candidate.x..xMax()!!).count {
-                Point2D(it, candidate.y) in seen
+        // 46 pipe tiles in boundary, 28 vertical ones
+        val verticalBoundaryTiles = seen
+            .filter { it.value.type in listOf(PipeType.VERTICAL, PipeType.NORTH_EAST_RIGHT_ANGLE, PipeType.NORTH_WEST_RIGHT_ANGLE) }
+
+        val innerPoints = getDataMap().entries.filter { it.key !in seen }.map { it.key }.filter { candidate ->
+            val boundaryCollisions = (candidate.x..xMax()!!).filter {
+                Point2D(it, candidate.y) in verticalBoundaryTiles
             }
 
-            boundaryCollisions % 2 != 0
+            boundaryCollisions.size % 2 != 0
         }
 
-        return innerPoints // TODO: Fix off by one error
+        return innerPoints.size // TODO: Fix off by one error
     }
 
     private fun determineStartingTilePipeType(start: Point2D): PipeType {

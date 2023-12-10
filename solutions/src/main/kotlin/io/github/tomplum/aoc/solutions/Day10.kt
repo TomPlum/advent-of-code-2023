@@ -12,4 +12,8 @@ class Day10 : Solution<Int, Int> {
     override fun part1(): Int {
         return pipeMaze.calculateStepsToFarthestPosition()
     }
+
+    override fun part2(): Int {
+        return pipeMaze.determinePointsInsidePipeLoop()
+    }
 }
