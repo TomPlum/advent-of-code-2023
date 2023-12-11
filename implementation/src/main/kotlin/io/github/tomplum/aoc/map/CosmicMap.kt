@@ -68,15 +68,12 @@ class CosmicMap(data: List<String>) : AdventMap2D<CosmicTile>() {
             }
         }
 
-        val seen = mutableListOf<String>()
-        val sum = yShiftedGalaxies.sumOf { galaxyPosition ->
-            yShiftedGalaxies.filterNot { pos -> pos == galaxyPosition || "$pos$galaxyPosition" in seen }.sumOf { targetGalaxy ->
-                seen.add("$galaxyPosition$targetGalaxy")
-                seen.add("$targetGalaxy$galaxyPosition")
-                galaxyPosition.distanceBetween(targetGalaxy).toLong()
+        val galacticPairs = yShiftedGalaxies.flatMapIndexed { i, point ->
+            yShiftedGalaxies.drop(i + 1).map { other ->
+                point to other
             }
         }
 
-        return sum
+        return galacticPairs.sumOf { (source, target)  -> source.distanceBetween(target).toLong() }
     }
 }
