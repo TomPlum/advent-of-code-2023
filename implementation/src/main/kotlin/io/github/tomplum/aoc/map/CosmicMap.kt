@@ -22,7 +22,7 @@ class CosmicMap(data: List<String>) : AdventMap2D<CosmicTile>() {
         }
     }
 
-    fun calculateGalacticDistancesAfterExpansion(): Int {
+    fun calculateGalacticDistancesAfterExpansion(horizontalExpansion: Int = 2, verticalExpansion: Int = 2): Int {
         // TODO: Add getRows() and getColumns() to the advent map class
 
         val xMin = xMin()!!
@@ -46,30 +46,31 @@ class CosmicMap(data: List<String>) : AdventMap2D<CosmicTile>() {
             filterPoints(column.toSet()).any { it.value.isGalaxy() }
         }.map { column -> column.first().y }
 
-        xInsertionPoints.forEachIndexed { i, x ->
-            filterTiles { tile -> tile.isGalaxy() }
-                .filter { (pos) -> pos.x > (x + i) }
-                .forEach { (pos) ->
-                    removeTile(pos)
-                    addTile(pos, CosmicTile('.'))
-                    addTile(pos.shift(Direction.RIGHT), CosmicTile('#'))
+        val galaxies = filterTiles { tile -> tile.isGalaxy() }.keys.toList()
+
+        val xShiftedGalaxies = xInsertionPoints.foldIndexed(galaxies) { i, acc, x ->
+            acc.map { pos ->
+                if (pos.x > (x + (i * (horizontalExpansion - 1)))) {
+                    pos.shift(Direction.RIGHT, horizontalExpansion - 1)
+                } else {
+                    pos
                 }
+            }
         }
 
-        yInsertionPoints.forEachIndexed { i, y ->
-            filterTiles { tile -> tile.isGalaxy() }
-                .filter { (pos) -> pos.y > (y + i) }
-                .forEach { (pos) ->
-                    removeTile(pos)
-                    addTile(pos, CosmicTile('.'))
-                    addTile(pos.shift(Direction.UP), CosmicTile('#'))
+        val yShiftedGalaxies = yInsertionPoints.foldIndexed(xShiftedGalaxies) { i, acc, y ->
+            acc.map { pos ->
+                if (pos.y > (y + (i * (verticalExpansion - 1)))) {
+                    pos.shift(Direction.UP, verticalExpansion - 1)
+                } else {
+                    pos
                 }
+            }
         }
 
         val seen = mutableListOf<String>()
-        val galaxies = filterTiles { tile -> tile.isGalaxy() }.keys.toList()
-        val sum = galaxies.sumOf { galaxyPosition ->
-            galaxies.filterNot { pos -> pos == galaxyPosition || "$pos$galaxyPosition" in seen }.sumOf { targetGalaxy ->
+        val sum = yShiftedGalaxies.sumOf { galaxyPosition ->
+            yShiftedGalaxies.filterNot { pos -> pos == galaxyPosition || "$pos$galaxyPosition" in seen }.sumOf { targetGalaxy ->
                 seen.add("$galaxyPosition$targetGalaxy")
                 seen.add("$targetGalaxy$galaxyPosition")
                 galaxyPosition.distanceBetween(targetGalaxy)

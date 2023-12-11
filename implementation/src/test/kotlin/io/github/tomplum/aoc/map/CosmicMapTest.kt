@@ -11,6 +11,25 @@ class CosmicMapTest {
 
     @Test
     fun examplePartOne() {
-        assertThat(cosmicMap.calculateGalacticDistancesAfterExpansion()).isEqualTo(374)
+        val distanceSum = cosmicMap.calculateGalacticDistancesAfterExpansion()
+        assertThat(distanceSum).isEqualTo(374)
+    }
+
+    @Test
+    fun exampleOnePartTwo() {
+        val distanceSum = cosmicMap.calculateGalacticDistancesAfterExpansion(
+            horizontalExpansion = 10,
+            verticalExpansion = 10
+        )
+        assertThat(distanceSum).isEqualTo(1030)
+    }
+
+    @Test
+    fun exampleTwoPartTwo() {
+        val distanceSum = cosmicMap.calculateGalacticDistancesAfterExpansion(
+            horizontalExpansion = 100,
+            verticalExpansion = 100
+        )
+        assertThat(distanceSum).isEqualTo(8410)
     }
 }
