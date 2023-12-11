@@ -22,7 +22,7 @@ class CosmicMap(data: List<String>) : AdventMap2D<CosmicTile>() {
         }
     }
 
-    fun calculateGalacticDistancesAfterExpansion(horizontalExpansion: Int = 2, verticalExpansion: Int = 2): Int {
+    fun calculateGalacticDistancesAfterExpansion(horizontalExpansion: Int = 2, verticalExpansion: Int = 2): Long {
         // TODO: Add getRows() and getColumns() to the advent map class
 
         val xMin = xMin()!!
@@ -73,7 +73,7 @@ class CosmicMap(data: List<String>) : AdventMap2D<CosmicTile>() {
             yShiftedGalaxies.filterNot { pos -> pos == galaxyPosition || "$pos$galaxyPosition" in seen }.sumOf { targetGalaxy ->
                 seen.add("$galaxyPosition$targetGalaxy")
                 seen.add("$targetGalaxy$galaxyPosition")
-                galaxyPosition.distanceBetween(targetGalaxy)
+                galaxyPosition.distanceBetween(targetGalaxy).toLong()
             }
         }
 
