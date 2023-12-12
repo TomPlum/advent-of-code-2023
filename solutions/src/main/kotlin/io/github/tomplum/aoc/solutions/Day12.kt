@@ -12,4 +12,8 @@ class Day12 : Solution<Long, Long> {
     override fun part1(): Long {
         return springAnalyser.calculateArrangements()
     }
+
+    override fun part2(): Long {
+        return springAnalyser.calculateArrangements(copies = 5)
+    }
 }
