@@ -13,4 +13,9 @@ class SpringAnalyserTest {
     fun examplePartOne() {
         assertThat(analyser.calculateArrangements()).isEqualTo(21)
     }
+
+    @Test
+    fun examplePartTwo() {
+        assertThat(analyser.calculateArrangements(5)).isEqualTo(525152)
+    }
 }

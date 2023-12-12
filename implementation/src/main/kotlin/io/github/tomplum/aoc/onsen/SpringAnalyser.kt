@@ -1,12 +1,11 @@
 package io.github.tomplum.aoc.onsen
 
 class SpringAnalyser(private val records: List<String>) {
-    fun calculateArrangements(): Long {
-        return records.sumOf { record ->
-            val (springs, groups) = record.trim().split(" ")
-            val damagedGroups = groups.split(",").map(String::toInt)
-            countArrangements(springs, damagedGroups)
-        }
+    fun calculateArrangements(copies: Int = 1): Long = records.sumOf { record ->
+        val (springs, groups) = record.trim().split(" ")
+        val unfoldedSprings = "$springs?".repeat(copies).dropLast(1)
+        val damagedGroups = "$groups,".repeat(copies).dropLast(1).split(",").map(String::toInt)
+        countArrangements(unfoldedSprings, damagedGroups)
     }
 
     private val cache = hashMapOf<Pair<String, List<Int>>, Long>()
