@@ -2,7 +2,7 @@ package io.github.tomplum.aoc.map.lava
 
 class LavaPatternAnalyser(data: List<String>) {
     private val lavaIslandMaps = data.split { it.isBlank() }
-        .map { mapData -> LavaIslandMap(mapData.toList()) }
+        .mapIndexed { i, mapData -> LavaIslandMap(i, mapData.toList()) }
 
     fun summariseNotes(): Int =  lavaIslandMaps.map { map -> map.findInflectionPoints() }
         .groupBy { analysis -> analysis.reflectionType }
