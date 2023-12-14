@@ -3,7 +3,7 @@ package io.github.tomplum.aoc.map.lava
 import io.github.tomplum.libs.math.map.AdventMap2D
 import io.github.tomplum.libs.math.point.Point2D
 
-class LavaIslandMap(private val id: Int, data: List<String>): AdventMap2D<LavaIslandTile>() {
+class LavaIslandMap(data: List<String>): AdventMap2D<LavaIslandTile>() {
     init {
         var x = 0
         var y = 0

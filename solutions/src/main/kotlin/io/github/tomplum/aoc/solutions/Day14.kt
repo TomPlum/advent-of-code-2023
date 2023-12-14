@@ -12,4 +12,8 @@ class Day14 : Solution<Int, Int> {
     override fun part1(): Int {
         return platformMap.calculateNorthSupportBeamsTotalLoad()
     }
+
+    override fun part2(): Int {
+        return platformMap.calculateNorthSupportBeamsTotalLoad(cycles = 1000000000)
+    }
 }

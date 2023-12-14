@@ -13,4 +13,9 @@ class PlatformMapTest {
     fun examplePartOne() {
         assertThat(platformMap.calculateNorthSupportBeamsTotalLoad()).isEqualTo(136)
     }
+
+    @Test
+    fun examplePartTwo() {
+        assertThat(platformMap.calculateNorthSupportBeamsTotalLoad(cycles = 1000000000)).isEqualTo(64)
+    }
 }
