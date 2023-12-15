@@ -10,7 +10,12 @@ class HashAlgorithmTest {
     private val hashAlgorithm = HashAlgorithm(input)
 
     @Test
-    fun partOne() {
+    fun examplePartOne() {
         assertThat(hashAlgorithm.run()).isEqualTo(1320)
+    }
+
+    @Test
+    fun examplePartTwo() {
+        assertThat(hashAlgorithm.calculateFocusingPower()).isEqualTo(145)
     }
 }
