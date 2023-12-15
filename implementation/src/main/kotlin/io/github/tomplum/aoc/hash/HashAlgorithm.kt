@@ -40,20 +40,10 @@ class HashAlgorithm(private val input: String) {
 
         return boxes.entries.sumOf { (box, lenses) ->
             lenses.sumOf { lens ->
-                val (_, focalLength) = lens
-                val a = 1 + box
-                val b = lenses.indexOf(lens) + 1
-                val c = focalLength
-                listOf(a, b, c).product()
+                listOf(1 + box,  lenses.indexOf(lens) + 1, lens.second).product()
             }
         }
     }
 
-    private fun String.hash() = this.fold(0) { value, character ->
-        var new = value
-        new += character.code
-        new *= 17
-        new %= 256
-        new
-    }
+    private fun String.hash() = this.fold(0) { value, character -> ((value + character.code) * 17) % 256 }
 }
