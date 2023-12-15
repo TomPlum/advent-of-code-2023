@@ -12,4 +12,8 @@ class Day15: Solution<Int, Int> {
     override fun part1(): Int {
         return algorithm.run()
     }
+
+    override fun part2(): Int {
+        return algorithm.calculateFocusingPower()
+    }
 }
