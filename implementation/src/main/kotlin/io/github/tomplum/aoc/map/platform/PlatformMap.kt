@@ -55,7 +55,7 @@ class PlatformMap(data: List<String>): AdventMap2D<PlatformTile>() {
 
     fun calculateNorthSupportBeamsTotalLoad(cycles: Int): Int {
         val directions = listOf(Direction.UP, Direction.LEFT, Direction.DOWN, Direction.RIGHT)
-        val cache = mutableMapOf<String, Pair<Int, Int>>()
+        val cache = mutableMapOf<String, Int>()
 
         repeat(cycles) { currentCycleIndex ->
             directions.forEach { direction ->
@@ -65,15 +65,23 @@ class PlatformMap(data: List<String>): AdventMap2D<PlatformTile>() {
 //            AdventLogger.error(this)
 
             val snapshot = filterTiles { tile -> tile.isRoundedRock() }.keys.toList().joinToString(transform = Point2D::toString)
-            val currentLoad = calculateCurrentNorthSupportBeamLoad()
+            // val currentLoad = calculateCurrentNorthSupportBeamLoad()
 //            AdventLogger.error(currentLoad)
 
             if (cache.containsKey(snapshot)) {
-                val remainder = cycles % (currentCycleIndex + 1)
-                return cache.entries.find { entry -> entry.value.second == remainder }?.value?.first ?: throw IllegalArgumentException("Couldn't find cycle")
+                val cycleLength = (currentCycleIndex + 1) - cache[snapshot]!!
+                val remainingCycles = (cycles - (currentCycleIndex + 1)) % cycleLength
+
+                repeat(remainingCycles) {
+                    directions.forEach { direction ->
+                        tiltPlatform(direction)
+                    }
+                }
+
+                return calculateCurrentNorthSupportBeamLoad()
             }
 
-            cache[snapshot] = currentLoad to currentCycleIndex + 1
+            cache[snapshot] = currentCycleIndex + 1
         }
 
         return filterTiles { tile -> tile.isRoundedRock() }.keys.sumOf { pos ->
@@ -127,7 +135,15 @@ class PlatformMap(data: List<String>): AdventMap2D<PlatformTile>() {
     }
 
     private fun getAvailablePlatform(currentPosition: Point2D, direction: Direction): Point2D {
-        val path = getDataMap().filterKeys { pos ->
+        val pathPoints =  when(direction) {
+            Direction.UP -> (currentPosition.y downTo 0).map { y ->  Point2D(currentPosition.x, y) }
+            Direction.DOWN -> (currentPosition.y..yMax).map { y -> Point2D(currentPosition.x, y)}
+            Direction.RIGHT -> (currentPosition.x..xMax).map { x -> Point2D(x, currentPosition.y) }
+            Direction.LEFT -> (currentPosition.x downTo 0).map { x -> Point2D(x, currentPosition.y) }
+            else -> throw IllegalArgumentException("Invalid Direction [$direction]")
+        }.map { pos -> pos to getTile(pos) }
+
+/*        val path = getDataMap().filterKeys { pos ->
             when(direction) {
                 Direction.UP, Direction.DOWN -> pos.x == currentPosition.x
                 Direction.RIGHT, Direction.LEFT -> pos.y == currentPosition.y
@@ -139,7 +155,7 @@ class PlatformMap(data: List<String>): AdventMap2D<PlatformTile>() {
             Direction.RIGHT -> path.entries.sortedBy { (pos) -> pos.x }
             Direction.LEFT -> path.entries.sortedByDescending { (pos) -> pos.x }
             else -> throw IllegalArgumentException("Invalid Direction [$direction]")
-        } }
+        } }*/
 
         var currentEmptyCandidate = when(direction) {
             Direction.UP, Direction.DOWN -> Int.MAX_VALUE
@@ -147,7 +163,7 @@ class PlatformMap(data: List<String>): AdventMap2D<PlatformTile>() {
             else -> throw IllegalArgumentException("Invalid Direction [$direction]")
         }
 
-        path.forEach { (pos, tile) ->
+        pathPoints.forEach { (pos, tile) ->
             val isCubicRockGoingToBlockMovement = when(direction) {
                 Direction.UP -> pos.y < currentPosition.y
                 Direction.DOWN -> pos.y > currentPosition.y
@@ -204,5 +220,5 @@ class PlatformMap(data: List<String>): AdventMap2D<PlatformTile>() {
 
     private fun calculateCurrentNorthSupportBeamLoad() = filterTiles { tile ->
         tile.isRoundedRock()
-    }.keys.sumOf { pos -> (yMax()!! + 1) - pos.y }
+    }.keys.sumOf { pos -> (yMax + 1) - pos.y }
 }

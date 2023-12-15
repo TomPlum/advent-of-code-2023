@@ -14,6 +14,7 @@ class Day14Test {
 
     @Test
     fun partTwo() {
+        // 96716 too high
         assertThat(solution.part2()).isEqualTo(12314)
     }
 }
