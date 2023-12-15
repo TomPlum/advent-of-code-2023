@@ -1,6 +1,6 @@
 # :christmas_tree: Advent of Code 2023
 
-![GitHub](https://img.shields.io/badge/stars-24%2F50-yellow)
+![GitHub](https://img.shields.io/badge/stars-28%2F50-yellow)
 
 ## What is Advent of Code?
 
@@ -59,7 +59,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 12  | 7350          | 13ms     | 200097286528151 | 109ms    | [Hot Springs](docs/DAY12.MD)                     |
 | 13  | -             | -        | -               | -        | [](docs/DAY13.MD)                                |
 | 14  | -             | -        | -               | -        | [](docs/DAY14.MD)                                |
-| 15  | -             | -        | -               | -        | [](docs/DAY15.MD)                                |
+| 15  | 516070        | 676μs    | 244981          | 3ms      | [Lens Library](docs/DAY15.MD)                    |
 | 16  | -             | -        | -               | -        | [](docs/DAY16.MD)                                |
 | 17  | -             | -        | -               | -        | [](docs/DAY17.MD)                                |
 | 18  | -             | -        | -               | -        | [](docs/DAY18.MD)                                |
