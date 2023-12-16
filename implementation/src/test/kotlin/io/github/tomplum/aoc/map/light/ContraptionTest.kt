@@ -13,4 +13,9 @@ class ContraptionTest {
     fun examplePartOne() {
         assertThat(contraption.countEnergisedTiles()).isEqualTo(46)
     }
+
+    @Test
+    fun examplePartTwo() {
+        assertThat(contraption.countEnergisedTilesFromAllEdgeEntryPoints()).isEqualTo(51)
+    }
 }
