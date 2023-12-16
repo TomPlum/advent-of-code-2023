@@ -23,40 +23,42 @@ class Contraption(data: List<String>): AdventMap2D<ContraptionTile>() {
     }
 
     fun countEnergisedTiles(): Int {
-        var beams = mutableListOf(Pair(Point2D.origin(), Direction.RIGHT))
-        var tilesSeen = 0
-// 6705
-        while(beams.isNotEmpty() && tilesSeen < 1000000000) {
-            beams = beams.fold(mutableListOf()) { acc, (position, beamDirection) ->
-                val tile = getTile(position)
-                tile.isEnergised = true
-                tilesSeen++
+        val start = Point2D.origin()
+        val seen = hashSetOf(start to Direction.RIGHT)
+        val queue = ArrayDeque<Pair<Point2D, Direction>>().apply {
+            add(start to Direction.RIGHT)
+        }
 
-                if (tile.isMirror()) {
-                    val reflectedDirection = tile.reflectionDirection(beamDirection)
-                    val newPosition = position.shift(reflectedDirection)
-                    if (hasRecorded(newPosition)) {
-                        acc.add(Pair(newPosition, reflectedDirection))
-                    }
-                } else if (tile.isSplitter()) {
-                    val splitDirections = tile.splitDirections(beamDirection)
-                    splitDirections.forEach { newDirection ->
-                        val newPosition = position.shift(newDirection)
-                        if (hasRecorded(newPosition)) {
-                            acc.add(Pair(newPosition, newDirection))
-                        }
-                    }
-                } else if (tile.isEmpty()) {
-                    val newPosition = position.shift(beamDirection)
-                    if (hasRecorded(newPosition)) {
-                        acc.add(Pair(newPosition, beamDirection))
-                    }
+        while (queue.isNotEmpty()) {
+            val (position, beamDirection) = queue.removeFirst()
+            val tile = getTile(position)
+
+            val nextDirections = if (tile.isMirror()) {
+                val reflectedDirection = tile.reflectionDirection(beamDirection)
+                val newPosition = position.shift(reflectedDirection)
+                    listOf(Pair(newPosition, reflectedDirection))
+            } else if (tile.isSplitter()) {
+                val splitDirections = tile.splitDirections(beamDirection)
+                splitDirections.map { newDirection ->
+                    val newPosition = position.shift(newDirection)
+                    Pair(newPosition, newDirection)
                 }
+            } else if (tile.isEmpty()) {
+                val newPosition = position.shift(beamDirection)
+                listOf(Pair(newPosition, beamDirection))
+            } else {
+                throw IllegalArgumentException("Invalid Tile")
+            }
 
-                acc
+            nextDirections.forEach { (nextPosition, nextDirection) ->
+                val nextPair = nextPosition to nextDirection
+                if (nextPair !in seen && hasRecorded(nextPosition)) {
+                    queue.add(nextPair)
+                    seen += nextPair
+                }
             }
         }
 
-        return filterTiles { tile -> tile.isEnergised }.keys.count()
+        return seen.map { (pos) -> pos }.toSet().size
     }
 }
