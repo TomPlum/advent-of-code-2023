@@ -12,4 +12,8 @@ class Day16: Solution<Int, Int> {
     override fun part1(): Int {
         return contraption.countEnergisedTiles()
     }
+
+    override fun part2(): Int {
+        return contraption.countEnergisedTilesFromAllEdgeEntryPoints()
+    }
 }
