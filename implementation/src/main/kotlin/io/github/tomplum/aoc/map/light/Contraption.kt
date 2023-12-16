@@ -25,8 +25,8 @@ class Contraption(data: List<String>): AdventMap2D<ContraptionTile>() {
     fun countEnergisedTiles(): Int {
         var beams = mutableListOf(Pair(Point2D.origin(), Direction.RIGHT))
         var tilesSeen = 0
-
-        while(beams.isNotEmpty() && tilesSeen < 10000) {
+// 6705
+        while(beams.isNotEmpty() && tilesSeen < 1000000000) {
             beams = beams.fold(mutableListOf()) { acc, (position, beamDirection) ->
                 val tile = getTile(position)
                 tile.isEnergised = true
