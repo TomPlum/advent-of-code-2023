@@ -6,11 +6,25 @@ import io.github.tomplum.aoc.input.TestInputReader
 import org.junit.jupiter.api.Test
 
 class CityMapTest {
-    private val data = TestInputReader.read<String>("day17/example.txt")
-    private val citMap = CityMap(data.value)
 
     @Test
     fun examplePartOne() {
+        val data = TestInputReader.read<String>("day17/example.txt")
+        val citMap = CityMap(data.value)
         assertThat(citMap.directCrucibleFromLavaPoolToMachinePartsFactory()).isEqualTo(102)
+    }
+
+    @Test
+    fun exampleOnePartTwo() {
+        val data = TestInputReader.read<String>("day17/example.txt")
+        val citMap = CityMap(data.value)
+        assertThat(citMap.directUltraCrucibleFromLavaPoolToMachinePartsFactory()).isEqualTo(94)
+    }
+
+    @Test
+    fun exampleTwoPartTwo() {
+        val data = TestInputReader.read<String>("day17/example-2.txt")
+        val citMap = CityMap(data.value)
+        assertThat(citMap.directUltraCrucibleFromLavaPoolToMachinePartsFactory()).isEqualTo(71)
     }
 }
