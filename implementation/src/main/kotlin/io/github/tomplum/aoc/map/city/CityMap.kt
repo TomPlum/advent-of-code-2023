@@ -34,16 +34,7 @@ class CityMap(data: List<String>): AdventMap2D<CityBlock>() {
         val position: Point2D,
         val direction: Direction,
         var consecutiveSameDirectionSteps: Int = 1
-    ): Comparable<CrucibleLocation> {
-        override fun compareTo(other: CrucibleLocation): Int {
-         /*   return Comparator.comparing(CrucibleLocation::position)
-                .thenComparing(CrucibleLocation::direction)
-                .thenComparing(CrucibleLocation::minimumHeatLoss)
-                .thenComparing(CrucibleLocation::consecutiveSameDirectionSteps)
-                .compare(this, other)*/
-            return 1
-        }
-    }
+    )
 
     data class Node(val value: CrucibleLocation, val distance: Int): Comparable<Node> {
         override fun compareTo(other: Node): Int {
