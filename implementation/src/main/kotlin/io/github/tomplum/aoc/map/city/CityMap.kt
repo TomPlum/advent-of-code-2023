@@ -24,61 +24,87 @@ class CityMap(data: List<String>): AdventMap2D<CityBlock>() {
     }
 
     fun directCrucibleFromLavaPoolToMachinePartsFactory(): Int {
-        return traverseCity(CrucibleLocation(Point2D.origin(), Direction.RIGHT))
+        return traverseCity(listOf(
+            CrucibleLocation(Point2D.origin(), Direction.RIGHT, 0),
+            CrucibleLocation(Point2D.origin(), Direction.UP, 0)
+        ))
     }
 
-    data class CrucibleLocation(val position: Point2D, val direction: Direction, val history: List<Direction> = mutableListOf()): Comparable<CrucibleLocation> {
+    data class CrucibleLocation(
+        val position: Point2D,
+        val direction: Direction,
+        var consecutiveSameDirectionSteps: Int = 1
+    ): Comparable<CrucibleLocation> {
         override fun compareTo(other: CrucibleLocation): Int {
-            return other.position.compareTo(position)
+         /*   return Comparator.comparing(CrucibleLocation::position)
+                .thenComparing(CrucibleLocation::direction)
+                .thenComparing(CrucibleLocation::minimumHeatLoss)
+                .thenComparing(CrucibleLocation::consecutiveSameDirectionSteps)
+                .compare(this, other)*/
+            return 1
         }
     }
 
-    private fun traverseCity(startingPosition: CrucibleLocation): Int {
-        val factoryLocation = Point2D(xMax()!!, yMax()!!)
+    data class Node(val value: CrucibleLocation, val distance: Int): Comparable<Node> {
+        override fun compareTo(other: Node): Int {
+            return distance.compareTo(other.distance)
+        }
+    }
 
-        val heatLoss = mutableMapOf<Point2D, Int>()
-        val next = PriorityQueue<CrucibleLocation>()
+    private fun traverseCity(startingPositions: List<CrucibleLocation>): Int {
+        val xMax = xMax()!!
+        val yMax = yMax()!!
+        val factoryLocation = Point2D(xMax, yMax)
 
-        next.offer(startingPosition)
+        val heatLoss = mutableMapOf<CrucibleLocation, Int>()
+        val next = PriorityQueue<Node>()
+        val settled = mutableSetOf<CrucibleLocation>()
 
-        heatLoss[startingPosition.position] = 0
+        startingPositions.forEach { startingPosition ->
+            next.offer(Node(startingPosition, 0))
+        }
 
         while(next.isNotEmpty()) {
-            val (currentPos, currentDirection, currentHistory) = next.poll()
+            val (currentNode, currentDistance) = next.poll()
+            val (currentPos, currentDirection, consecutiveSteps) = currentNode
 
-            val currentHeatLoss = heatLoss[currentPos]!!
+            settled.add(currentNode)
 
             val nextPositionCandidates = currentPos.let { pos ->
-                val straight = pos.shift(currentDirection) to currentDirection
+                val straight = Triple(pos.shift(currentDirection), currentDirection, true)
 
                 val rightDirection = currentDirection.rotate(90)
-                val right = pos.shift(rightDirection) to rightDirection
+                val right = Triple(pos.shift(rightDirection), rightDirection, false)
 
                 val leftDirection = currentDirection.rotate(-90)
-                val left = pos.shift(leftDirection) to leftDirection
+                val left = Triple(pos.shift(leftDirection), leftDirection, false)
 
                 val candidates = mutableListOf(left, right)
-                if (currentHistory.takeLast(3).distinct().size > 1) {
+                if (consecutiveSteps < 3) {
                     candidates.add(straight)
                 }
-                val validCandidates = candidates.filter { (pos) -> hasRecorded(pos) }
 
                 if (currentPos == factoryLocation) {
-                    emptyList()
+                    return currentDistance
                 } else {
-                    validCandidates
+                    candidates.filter { (pos) -> hasRecorded(pos) }
                 }
             }
 
-            nextPositionCandidates.forEach { (adjacentPos, adjacentDirection) ->
-                val updatedHeatLoss = currentHeatLoss + getTile(adjacentPos).value
-                if (updatedHeatLoss < heatLoss.getOrDefault(adjacentPos, Int.MAX_VALUE)) {
-                    heatLoss[adjacentPos] = updatedHeatLoss
-                    next.add(CrucibleLocation(adjacentPos, adjacentDirection, currentHistory + adjacentDirection))
+            nextPositionCandidates.forEach { (adjacentPos, adjacentDirection, isMovingStraight) ->
+                val updatedConsecutiveSteps = if (isMovingStraight) consecutiveSteps + 1 else 1
+                val adjacentCrucibleLocation = CrucibleLocation(adjacentPos, adjacentDirection, updatedConsecutiveSteps)
+
+                if (!settled.contains(adjacentCrucibleLocation)) {
+                    val updatedDistance = currentDistance + getTile(adjacentPos).value
+                    if (updatedDistance < heatLoss.getOrDefault(adjacentCrucibleLocation, Int.MAX_VALUE)) {
+                        heatLoss[adjacentCrucibleLocation] = updatedDistance
+                        next.add(Node(adjacentCrucibleLocation, updatedDistance))
+                    }
                 }
             }
         }
 
-        return heatLoss[factoryLocation]!!
+        return 0
     }
 }
