@@ -1,6 +1,6 @@
 # :christmas_tree: Advent of Code 2023
 
-![GitHub](https://img.shields.io/badge/stars-31%2F50-yellow)
+![GitHub](https://img.shields.io/badge/stars-34%2F50-yellow)
 
 ## What is Advent of Code?
 
@@ -61,7 +61,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 14  | -             | -        | -               | -        | [](docs/DAY14.MD)                                |
 | 15  | 516070        | 676μs    | 244981          | 3ms      | [Lens Library](docs/DAY15.MD)                    |
 | 16  | 6994          | 32ms     | 7488            | 1s 499ms | [The Floor Will Be Lava](docs/DAY16.MD)          |
-| 17  | -             | -        | -               | -        | [](docs/DAY17.MD)                                |
+| 17  | 698           | 1s 4ms   | 825             | 4s 52ms  | [Clumsy Crucible](docs/DAY17.MD)                 |
 | 18  | -             | -        | -               | -        | [](docs/DAY18.MD)                                |
 | 19  | -             | -        | -               | -        | [](docs/DAY19.MD)                                |
 | 20  | -             | -        | -               | -        | [](docs/DAY20.MD)                                |
@@ -71,8 +71,8 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 24  | -             | -        | -               | -        | [](docs/DAY24.MD)                                |
 | 25  | -             | -        | -               | -        | [](docs/DAY25.MD)                                |
 
-Average Execution Time: 126ms \
-Total Execution Time: 507ms \
+Average Execution Time: 838ms \
+Total Execution Time: 12s 582ms \
 Mac M2 Pro - OpenJDK Runtime Environment Corretto-18.0.2.9.1 - MacOS Sonoma 14.1.2
 
 ## Advent Calendar

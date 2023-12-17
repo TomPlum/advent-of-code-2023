@@ -6,7 +6,6 @@ import io.github.tomplum.aoc.input.TestInputReader
 import org.junit.jupiter.api.Test
 
 class CityMapTest {
-
     @Test
     fun examplePartOne() {
         val data = TestInputReader.read<String>("day17/example.txt")
