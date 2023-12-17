@@ -45,7 +45,7 @@ class Contraption(data: List<String>): AdventMap2D<ContraptionTile>() {
     }
 
     private fun energiseBeam(entryPoint: Pair<Point2D, Direction>): Int {
-        val seen = hashSetOf(entryPoint)
+        val seen = mutableSetOf(entryPoint)
         val queue = ArrayDeque<Pair<Point2D, Direction>>().apply {
             add(entryPoint)
         }
