@@ -10,10 +10,10 @@ class Day17: Solution<Int, Int> {
     private val cityMap = CityMap(data)
 
     override fun part1(): Int {
-        return cityMap.directCrucibleFromLavaPoolToMachinePartsFactory()
+        return cityMap.traverseWithCrucible()
     }
 
     override fun part2(): Int {
-        return cityMap.directUltraCrucibleFromLavaPoolToMachinePartsFactory()
+        return cityMap.traverseWithUltraCrucible()
     }
 }

@@ -11,20 +11,20 @@ class CityMapTest {
     fun examplePartOne() {
         val data = TestInputReader.read<String>("day17/example.txt")
         val citMap = CityMap(data.value)
-        assertThat(citMap.directCrucibleFromLavaPoolToMachinePartsFactory()).isEqualTo(102)
+        assertThat(citMap.traverseWithCrucible()).isEqualTo(102)
     }
 
     @Test
     fun exampleOnePartTwo() {
         val data = TestInputReader.read<String>("day17/example.txt")
         val citMap = CityMap(data.value)
-        assertThat(citMap.directUltraCrucibleFromLavaPoolToMachinePartsFactory()).isEqualTo(94)
+        assertThat(citMap.traverseWithUltraCrucible()).isEqualTo(94)
     }
 
     @Test
     fun exampleTwoPartTwo() {
         val data = TestInputReader.read<String>("day17/example-2.txt")
         val citMap = CityMap(data.value)
-        assertThat(citMap.directUltraCrucibleFromLavaPoolToMachinePartsFactory()).isEqualTo(71)
+        assertThat(citMap.traverseWithUltraCrucible()).isEqualTo(71)
     }
 }
