@@ -14,7 +14,6 @@ class Day17: Solution<Int, Int> {
     }
 
     override fun part2(): Int {
-        // 806 too low
         return cityMap.directUltraCrucibleFromLavaPoolToMachinePartsFactory()
     }
 }
