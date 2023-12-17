@@ -116,13 +116,6 @@ class CityMap(data: List<String>): AdventMap2D<CityBlock>() {
         }
     )
 
-    data class CrucibleLocation(
-        val position: Point2D,
-        val direction: Direction,
-        val isMovingStraight: Boolean,
-        var consecutiveSteps: Int = 1
-    )
-
     data class Node<T>(val value: T, val distance: Int): Comparable<Node<T>> {
         override fun compareTo(other: Node<T>): Int {
             return distance.compareTo(other.distance)
