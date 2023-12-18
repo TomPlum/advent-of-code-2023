@@ -10,7 +10,12 @@ class LagoonMapTest {
     private val lagoonMap = LagoonMap(digPlan)
 
     @Test
-    fun partOneExampleOne() {
+    fun partOneExample() {
         assertThat(lagoonMap.calculateVolume()).isEqualTo(62)
+    }
+
+    @Test
+    fun partTwoExample() {
+        assertThat(lagoonMap.calculateTrueVolume()).isEqualTo(952408144115)
     }
 }

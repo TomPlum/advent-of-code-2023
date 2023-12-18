@@ -1,6 +1,5 @@
 package io.github.tomplum.aoc.map.lagoon
 
-import io.github.tomplum.libs.logging.AdventLogger
 import io.github.tomplum.libs.math.Direction
 import io.github.tomplum.libs.math.map.AdventMap2D
 import io.github.tomplum.libs.math.point.Point2D
@@ -19,6 +18,22 @@ class LagoonMap(digPlan: List<String>): AdventMap2D<LagoonTile>() {
         }
 
         Triple(direction, distance.toInt(), hex.removeSurrounding("(", ")"))
+    }
+    private val trueInstructions = digPlan.map { line ->
+        val (directionCode, distance, hex) = line.split(" ")
+
+        val distanceParsed = hex.substring(2, 7).toInt(radix = 16)
+        val directionCodeParsed = hex.substring(7, 8).toLong(radix = 16)
+
+        val direction = when(directionCodeParsed) {
+            0L -> Direction.RIGHT
+            2L -> Direction.LEFT
+            3L -> Direction.DOWN
+            1L -> Direction.UP
+            else -> throw IllegalArgumentException("Invalid Directional Code [$directionCode]")
+        }
+
+        Triple(direction, distanceParsed, hex.removeSurrounding("(", ")"))
     }
 
     fun calculateVolume(): Long {
@@ -74,6 +89,23 @@ class LagoonMap(digPlan: List<String>): AdventMap2D<LagoonTile>() {
             .forEach { (pos) -> addTile(pos, LagoonTile('#')) }*/
 
 //        return filterTiles { tile -> tile.isTrench() }.count()
+    }
+
+    fun calculateTrueVolume(): Long {
+        val vertices = mutableListOf<Point2D>()
+
+        var currentPosition = Point2D.origin()
+        var perimeter = 0L
+        trueInstructions.forEach { (direction, distance) ->
+            currentPosition = currentPosition.shift(direction, distance)
+            vertices += currentPosition
+            perimeter += distance
+        }
+
+        val area = vertices.area()
+        val enclosedPoints = (area - perimeter) / 2L + 1L
+        return perimeter + enclosedPoints
+
     }
 
     private fun Point2D.isEnclosed(boundaryPredicate: (tile: LagoonTile) -> Boolean): Boolean {
