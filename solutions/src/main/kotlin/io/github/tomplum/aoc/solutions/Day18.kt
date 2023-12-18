@@ -12,4 +12,8 @@ class Day18: Solution<Long, Long> {
     override fun part1(): Long {
         return lagoonMap.calculateVolume()
     }
+
+    override fun part2(): Long {
+        return lagoonMap.calculateTrueVolume()
+    }
 }
