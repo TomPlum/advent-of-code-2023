@@ -5,6 +5,7 @@ import io.github.tomplum.libs.math.map.AdventMap2D
 import io.github.tomplum.libs.math.point.Point2D
 import kotlin.math.abs
 
+// TODO: Remove AdventMap and Tile and move packages
 class LagoonMap(digPlan: List<String>): AdventMap2D<LagoonTile>() {
     private val instructions = digPlan.map { line ->
         val (directionCode, distance) = line.split(" ")
@@ -54,6 +55,7 @@ class LagoonMap(digPlan: List<String>): AdventMap2D<LagoonTile>() {
         return perimeter + enclosedPoints
     }
 
+    // TODO: Migrate to libs and replace
     private fun List<Point2D>.area(): Long = (1..this.size)
         .asSequence()
         .map { i ->
