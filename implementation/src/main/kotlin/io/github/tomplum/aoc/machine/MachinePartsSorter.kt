@@ -2,27 +2,24 @@ package io.github.tomplum.aoc.machine
 
 class MachinePartsSorter(data: List<String>) {
     private val sortingData = data.split { line -> line.isBlank()}.let { (workflows, partRatings) ->
-        val workflowInstructions = workflows.map { workflowData ->
+        val workflowInstructions = workflows.associate { workflowData ->
             val (name, rules) = workflowData.removeSuffix("}").split("{")
             name to rules.split(",")
-        }.toMap()
+        }
 
         val parts = partRatings.map { ratingData ->
-            ratingData.removeSurrounding("{", "}").split(",").map { rating ->
+            ratingData.removeSurrounding("{", "}").split(",").associate { rating ->
                 val (category, value) = rating.split("=")
                 category to value.toInt()
-            }.toMap()
+            }
         }
 
         parts to workflowInstructions
     }
 
-    fun sort(): Int {
-        val result = sortingData.first.map { it to isPartAccepted(it, sortingData.second["in"]!!) }
-        return sortingData.first.filter { partRatings ->
-            isPartAccepted(partRatings, sortingData.second["in"]!!)
-        }.sumOf { it.values.sum() }
-    }
+    fun sort(): Int = sortingData.first.filter { partRatings ->
+        isPartAccepted(partRatings, sortingData.second["in"]!!)
+    }.sumOf { it.values.sum() }
 
     private fun isPartAccepted(part: Map<String, Int>, workflow: List<String>): Boolean {
         var accepted: Boolean? = null
@@ -52,6 +49,16 @@ class MachinePartsSorter(data: List<String>) {
                 val (ratingValue, targetWorkflow) = right.split(":")
 
                 if (part[category]!! < ratingValue.toInt()) {
+                    if (targetWorkflow == "R") {
+                        accepted = false
+                        break
+                    }
+
+                    if (targetWorkflow == "A") {
+                        accepted = true
+                        break
+                    }
+
                     accepted = isPartAccepted(part, sortingData.second[targetWorkflow]!!)
                     break
                 }
