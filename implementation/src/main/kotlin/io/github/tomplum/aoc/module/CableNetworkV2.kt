@@ -61,8 +61,18 @@ class CableNetworkV2(config: List<String>) {
     }
 
     fun getButtonPressesRequiredToDeliverToModule(targetModuleName: String): Long {
-        // 22803499706691 too low
-        val watching = mutableMapOf("js" to 0L, "zb" to 0L, "bs" to 0L, "rr" to 0L)
+        // Find the name of the conjunction module that needs to fire a LOW pulse at our target
+        val targetConjunctionModule = destinations.entries.find { targetModuleName in it.value }!!.key
+
+        // A conjunction module will only fire a LOW pulse at its destination modules when all
+        // other conjunction modules that target it have last sent a HIGH pulse. Here we find all
+        // conjunction modules names that send pulses to the targetConjunctionModule above
+        val sourceConjunctionModules = destinations.entries.filter { targetConjunctionModule in it.value }.map { it.key }
+
+        // Keep track of the minimum number of pulses that need to be fired until each
+        // of the tracked conjunction modules fire a HIGH pulse at our targetConjunctionModule
+        val watching = sourceConjunctionModules.associateWith { 0L }.toMutableMap()
+
         var pulsesSent = 0L
 
         while (watching.values.any { pulses -> pulses == 0L }) {
