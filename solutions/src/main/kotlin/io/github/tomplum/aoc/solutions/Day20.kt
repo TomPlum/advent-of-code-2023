@@ -12,4 +12,8 @@ class Day20: Solution<Long, Long> {
     override fun part1(): Long {
         return cableNetwork.getPulseCount()
     }
+
+    override fun part2(): Long {
+        return cableNetwork.getButtonPressesRequiredToDeliverToModule("rx")
+    }
 }
