@@ -13,15 +13,19 @@ enum class PulseType {
 
 abstract class Module(open val name: String, val type: ModuleType, open val destinationModules: List<String>) {
     abstract fun execute(pulse: PulseType): Pair<PulseType, List<String>>
+
+    override fun toString(): String {
+        return "$name -> ${destinationModules.joinToString(", ")}"
+    }
 }
 
-data class BroadcastModule(override val destinationModules: List<String>): Module("broadcaster", ModuleType.BROADCAST, destinationModules) {
+class BroadcastModule(override val destinationModules: List<String>): Module("broadcaster", ModuleType.BROADCAST, destinationModules) {
     override fun execute(pulse: PulseType):  Pair<PulseType, List<String>> {
         return pulse to destinationModules
     }
 }
 
-data class FlipFlopModule(
+class FlipFlopModule(
     override val name: String,
     override val destinationModules: List<String>,
     var powerStatus: Boolean = false
@@ -41,7 +45,7 @@ data class FlipFlopModule(
     }
 }
 
-data class ConjunctionModule(
+class ConjunctionModule(
     override val name: String,
     override val destinationModules: List<String>,
     val history: MutableMap<String, PulseType>
@@ -73,12 +77,19 @@ class CableNetwork(private val config: List<String>) {
             }
         }.toMutableMap()
 
+        val conjunctionWatchers = modules.values.filter { module -> module.type == ModuleType.CONJUNCTION }.associate { module ->
+            module.name to modules
+                .filter { it.value.type == ModuleType.FLIP_FLOP }
+                .filter { module.name in it.value.destinationModules }
+                .map { it.key }
+        }
+
         val activeModules = ArrayDeque<Triple<String, PulseType, Module>>()
 
         val pulsesSent = mutableMapOf<PulseType, Long>()
 
         fun pushTheAptlyButton() {
-             AdventLogger.error("button -low-> broadcaster")
+            AdventLogger.error("button -low-> broadcaster")
             activeModules.add(Triple("aptly",  PulseType.LOW, modules["broadcaster"]!!))
             pulsesSent.compute(PulseType.LOW) { _, count ->
                 if (count == null) 1 else count + 1
@@ -89,12 +100,24 @@ class CableNetwork(private val config: List<String>) {
             pushTheAptlyButton()
 
             while(activeModules.isNotEmpty()) {
-                val (sourceModule, incomingPulse, currentDestination) = activeModules.removeFirst()
+                val (sourceModuleName, incomingPulse, currentDestination) = activeModules.removeFirst()
 
-                if (currentDestination.type == ModuleType.CONJUNCTION) {
-                    modules.computeIfPresent(currentDestination.name) { _, module ->
-                        (module as ConjunctionModule).apply {
-                            history[sourceModule] = incomingPulse
+                val sourceModule = modules[sourceModuleName]
+
+                if (sourceModule != null && sourceModule.type == ModuleType.CONJUNCTION) {
+                    val watchingFlipFlops = conjunctionWatchers[sourceModuleName]
+
+                    watchingFlipFlops?.forEach { watcher ->
+                        modules.computeIfAbsent(currentDestination.name) { name ->
+                            (modules[name] as ConjunctionModule).apply {
+                                history[sourceModuleName] = if ((modules[watcher]!! as FlipFlopModule).powerStatus) PulseType.HIGH else PulseType.LOW
+                            }
+                        }
+                    }
+
+                    modules.computeIfPresent(sourceModule.name) { _, _ ->
+                        (sourceModule as ConjunctionModule).apply {
+                            history[sourceModuleName] = incomingPulse
                         }
                     }
                 }
@@ -106,7 +129,7 @@ class CableNetwork(private val config: List<String>) {
                 }
 
                 destinationModules.forEach { destinationModuleName ->
-                     AdventLogger.error("${currentDestination.name} -${outgoingPulseType.name.lowercase()}-> $destinationModuleName")
+                    AdventLogger.error("${currentDestination.name} -${outgoingPulseType.name.lowercase()}-> $destinationModuleName")
                     val newDestination = modules[destinationModuleName]
                     if (newDestination != null) {
                         activeModules.addLast(Triple(currentDestination.name, outgoingPulseType, modules[destinationModuleName]!!))
