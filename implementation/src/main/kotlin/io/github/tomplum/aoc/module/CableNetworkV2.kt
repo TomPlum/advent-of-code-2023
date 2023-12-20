@@ -69,16 +69,16 @@ class CableNetworkV2(config: List<String>) {
         // conjunction modules names that send pulses to the targetConjunctionModule above
         val sourceConjunctionModules = destinations.entries.filter { targetConjunctionModule in it.value }.map { it.key }
 
-        // Keep track of the minimum number of pulses that need to be fired until each
+        // Keep track of the minimum number of button presses that need to be fired until each
         // of the tracked conjunction modules fire a HIGH pulse at our targetConjunctionModule
         val watching = sourceConjunctionModules.associateWith { 0L }.toMutableMap()
 
-        var pulsesSent = 0L
+        var timesButtonPressed = 0L
 
         while (watching.values.any { pulses -> pulses == 0L }) {
             var activeModules = listOf(modules.getValue("broadcaster") to PulseType.LOW)
 
-            pulsesSent++
+            timesButtonPressed++
 
             while (activeModules.isNotEmpty()) {
                 activeModules = buildList {
@@ -90,7 +90,7 @@ class CableNetworkV2(config: List<String>) {
                         }
 
                         if (module.name in watching && outgoingPulse == PulseType.HIGH) {
-                            watching[module.name] = pulsesSent
+                            watching[module.name] = timesButtonPressed
                         }
 
                         destinations.getValue(module.name)
