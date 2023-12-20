@@ -9,14 +9,14 @@ class CableNetworkTest {
     @Test
     fun partOneExampleOne() {
         val config = TestInputReader.read<String>("day20/example-1.txt").value
-        val cableNetwork = CableNetworkV2(config)
+        val cableNetwork = SandMachineModuleNetwork(config)
         assertThat(cableNetwork.getPulseCount()).isEqualTo(32000000)
     }
 
     @Test
     fun partOneExampleTwo() {
         val config = TestInputReader.read<String>("day20/example-2.txt").value
-        val cableNetwork = CableNetworkV2(config)
+        val cableNetwork = SandMachineModuleNetwork(config)
         assertThat(cableNetwork.getPulseCount()).isEqualTo(11687500)
     }
 }

@@ -3,7 +3,7 @@ package io.github.tomplum.aoc.module
 import io.github.tomplum.libs.extensions.lcm
 import io.github.tomplum.libs.extensions.product
 
-class CableNetworkV2(config: List<String>) {
+class SandMachineModuleNetwork(config: List<String>) {
     private val destinations = config
         .map { configLine -> configLine.split(" -> ") }
         .associate { (name, destinations) -> name.replace("%", "").replace("&", "") to destinations.split(", ") }
