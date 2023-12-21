@@ -44,7 +44,7 @@ class SandMachineModuleNetwork(config: List<String>) {
 
         while (activeModules.isNotEmpty()) {
             activeModules = buildList {
-                for ((module, incomingPulse) in activeModules) {
+                activeModules.forEach { (module, incomingPulse) ->
                     pulses.compute(incomingPulse) { _, count ->
                         if (count == null) 1 else count  +1
                     }
@@ -52,7 +52,7 @@ class SandMachineModuleNetwork(config: List<String>) {
                     val outgoingPulse = module.send(incomingPulse)
 
                     if (outgoingPulse == PulseType.KEEPALIVE) {
-                        continue
+                        return@forEach
                     }
 
                     destinations.getValue(module.name)
@@ -79,12 +79,16 @@ class SandMachineModuleNetwork(config: List<String>) {
      */
     fun getButtonPressesRequiredToDeliverToModule(targetModuleName: String): Long {
         // Find the name of the conjunction module that needs to fire a LOW pulse at our target
-        val targetConjunctionModule = destinations.entries.find { targetModuleName in it.value }!!.key
+        val targetConjunctionModule = destinations.entries
+            .find { (_, destinations) -> targetModuleName in destinations }!!
+            .key
 
         // A conjunction module will only fire a LOW pulse at its destination modules when all
         // other conjunction modules that target it have last sent a HIGH pulse. Here we find all
         // conjunction modules names that send pulses to the targetConjunctionModule above
-        val sourceConjunctionModules = destinations.entries.filter { targetConjunctionModule in it.value }.map { it.key }
+        val sourceConjunctionModules = destinations.entries
+            .filter { (_, destinations) -> targetConjunctionModule in destinations }
+            .map { (sourceModuleName) -> sourceModuleName }
 
         // Keep track of the minimum number of button presses that need to be fired until each
         // of the tracked conjunction modules fire a HIGH pulse at our targetConjunctionModule
@@ -99,11 +103,11 @@ class SandMachineModuleNetwork(config: List<String>) {
 
             while (activeModules.isNotEmpty()) {
                 activeModules = buildList {
-                    for ((module, incomingPulse) in activeModules) {
+                    activeModules.forEach { (module, incomingPulse) ->
                         val outgoingPulse = module.send(incomingPulse)
 
                         if (outgoingPulse == PulseType.KEEPALIVE) {
-                            continue
+                            return@forEach
                         }
 
                         if (module.name in watching && outgoingPulse == PulseType.HIGH) {
