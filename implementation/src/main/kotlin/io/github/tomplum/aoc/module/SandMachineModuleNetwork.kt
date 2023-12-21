@@ -8,13 +8,19 @@ class SandMachineModuleNetwork(config: List<String>) {
         .map { configLine -> configLine.split(" -> ") }
         .associate { (name, destinations) -> name.replace("%", "").replace("&", "") to destinations.split(", ") }
 
-    private val modules = config
+    private val noOpModules = destinations
+        .values
+        .flatten()
+        .filter { name -> name !in destinations.keys }
+        .associateWith { name -> Module.NoOpKeepAlive(name) }
+
+    private val operationalModules = config
         .map { Module.fromConfigString(it.split(" -> ").first()) }
-        .associateBy { it.name } + destinations
-            .values
-            .flatten()
-            .filter { name -> name !in destinations.keys }
-            .associateWith { Module.NoOpKeepAlive(it) }
+        .associateBy { module -> module.name }
+
+    private val modules = operationalModules + noOpModules
+
+    private val aptlyButton = modules.getValue("broadcaster") to PulseType.LOW
 
     init {
         destinations.forEach { (source, destinations) ->
@@ -27,39 +33,50 @@ class SandMachineModuleNetwork(config: List<String>) {
         }
     }
 
-    fun getPulseCount(): Long {
-        val pulsesSent = mutableMapOf<PulseType, Long>()
+    /**
+     * Finds the product of the sums of the number of LOW and HIGH strength pulses
+     * fired by all [modules] after having pressed the [aptlyButton] 1000 times.
+     *
+     * @return The final product.
+     */
+    fun getPulseCount(): Long = (1..1000).fold(mutableMapOf<PulseType, Long>()) { pulses, _ ->
+        var activeModules = listOf(aptlyButton)
 
-        repeat(1000) {
-            var activeModules = listOf(modules.getValue("broadcaster") to PulseType.LOW)
-
-            while (activeModules.isNotEmpty()) {
-                activeModules = buildList {
-                    for ((module, incomingPulse) in activeModules) {
-                        pulsesSent.compute(incomingPulse) { _, count ->
-                            if (count == null) 1 else count  +1
-                        }
-
-                        val outgoingPulse = module.send(incomingPulse)
-
-                        if (outgoingPulse == PulseType.KEEPALIVE) {
-                            continue
-                        }
-
-                        destinations.getValue(module.name)
-                            .map { name -> modules.getValue(name) }
-                            .forEach { destination ->
-                                destination.receive(module.name, outgoingPulse)
-                                add(destination to outgoingPulse)
-                            }
+        while (activeModules.isNotEmpty()) {
+            activeModules = buildList {
+                for ((module, incomingPulse) in activeModules) {
+                    pulses.compute(incomingPulse) { _, count ->
+                        if (count == null) 1 else count  +1
                     }
+
+                    val outgoingPulse = module.send(incomingPulse)
+
+                    if (outgoingPulse == PulseType.KEEPALIVE) {
+                        continue
+                    }
+
+                    destinations.getValue(module.name)
+                        .map { name -> modules.getValue(name) }
+                        .forEach { destination ->
+                            destination.receive(module.name, outgoingPulse)
+                            add(destination to outgoingPulse)
+                        }
                 }
             }
         }
 
-        return pulsesSent.values.filter { value -> value > 0 }.toList().product()
-    }
+        pulses
+    }.values.filter { value -> value > 0 }.toList().product()
 
+
+    /**
+     * Finds the minimum number of times the [aptlyButton] needs to be pressed,
+     * with all the modules exhausting their message cycle, until the [targetModuleName]
+     * receives its first LOW strength pulse from the conjunction module targeting it.
+     *
+     * @param targetModuleName The name of the module to search for.
+     * @return The number of button presses required.
+     */
     fun getButtonPressesRequiredToDeliverToModule(targetModuleName: String): Long {
         // Find the name of the conjunction module that needs to fire a LOW pulse at our target
         val targetConjunctionModule = destinations.entries.find { targetModuleName in it.value }!!.key
@@ -76,7 +93,7 @@ class SandMachineModuleNetwork(config: List<String>) {
         var timesButtonPressed = 0L
 
         while (watching.values.any { pulses -> pulses == 0L }) {
-            var activeModules = listOf(modules.getValue("broadcaster") to PulseType.LOW)
+            var activeModules = listOf(aptlyButton)
 
             timesButtonPressed++
 
