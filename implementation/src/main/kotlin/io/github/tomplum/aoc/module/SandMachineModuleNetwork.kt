@@ -23,11 +23,11 @@ class SandMachineModuleNetwork(config: List<String>) {
     private val aptlyButton = modules.getValue("broadcaster") to PulseType.LOW
 
     init {
-        destinations.forEach { (source, destinations) ->
-            destinations.forEach { destination ->
+        destinations.forEach { (sourceModuleName, destinationModules) ->
+            destinationModules.forEach { destination ->
                 val module = modules.getValue(destination)
                 if (module is Module.Conjunction) {
-                    module.history[source] = PulseType.LOW
+                    module.history[sourceModuleName] = PulseType.LOW
                 }
             }
         }
@@ -55,12 +55,7 @@ class SandMachineModuleNetwork(config: List<String>) {
                         return@forEach
                     }
 
-                    destinations.getValue(module.name)
-                        .map { name -> modules.getValue(name) }
-                        .forEach { destination ->
-                            destination.receive(module.name, outgoingPulse)
-                            add(destination to outgoingPulse)
-                        }
+                    sendPulseToModules(module, outgoingPulse)
                 }
             }
         }
@@ -114,17 +109,24 @@ class SandMachineModuleNetwork(config: List<String>) {
                             watching[module.name] = timesButtonPressed
                         }
 
-                        destinations.getValue(module.name)
-                            .map { name -> modules.getValue(name) }
-                            .forEach { destination ->
-                                destination.receive(module.name, outgoingPulse)
-                                add(destination to outgoingPulse)
-                            }
+                        sendPulseToModules(module, outgoingPulse)
                     }
                 }
             }
         }
 
         return watching.values.toList().lcm()
+    }
+
+    private fun MutableList<Pair<Module, PulseType>>.sendPulseToModules(
+        module: Module,
+        outgoingPulse: PulseType
+    ) {
+        destinations.getValue(module.name)
+            .map { name -> modules.getValue(name) }
+            .forEach { destination ->
+                destination.receive(module.name, outgoingPulse)
+                add(destination to outgoingPulse)
+            }
     }
 }
