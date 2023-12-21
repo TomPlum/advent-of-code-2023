@@ -9,18 +9,18 @@ class SandMachineModuleNetwork(config: List<String>) {
         .associate { (name, destinations) -> name.replace("%", "").replace("&", "") to destinations.split(", ") }
 
     private val modules = config
-        .map { ModuleV2.fromConfigString(it.split(" -> ").first()) }
+        .map { Module.fromConfigString(it.split(" -> ").first()) }
         .associateBy { it.name } + destinations
             .values
             .flatten()
             .filter { name -> name !in destinations.keys }
-            .associateWith { ModuleV2.NoOpKeepAlive(it) }
+            .associateWith { Module.NoOpKeepAlive(it) }
 
     init {
         destinations.forEach { (source, destinations) ->
             destinations.forEach { destination ->
                 val module = modules.getValue(destination)
-                if (module is ModuleV2.Conjunction) {
+                if (module is Module.Conjunction) {
                     module.history[source] = PulseType.LOW
                 }
             }

@@ -1,8 +1,8 @@
 package io.github.tomplum.aoc.module
 
-sealed class ModuleV2 {
+sealed class Module {
     companion object {
-        fun fromConfigString(config: String): ModuleV2 {
+        fun fromConfigString(config: String): Module {
             return when (config.first()) {
                 '%'  -> FlipFlop(name = config.drop(1), powerStatus = false)
                 '&'  -> Conjunction(name = config.drop(1), history = mutableMapOf())
@@ -17,9 +17,9 @@ sealed class ModuleV2 {
     open fun receive(source: String, pulse: PulseType) {}
 
 
-    data class Broadcaster(override val name: String) : ModuleV2()
+    data class Broadcaster(override val name: String) : Module()
 
-    data class FlipFlop(override val name: String, var powerStatus: Boolean) : ModuleV2() {
+    data class FlipFlop(override val name: String, var powerStatus: Boolean) : Module() {
         override fun send(pulse: PulseType): PulseType {
             return if (pulse == PulseType.HIGH) {
                 PulseType.KEEPALIVE
@@ -35,7 +35,7 @@ sealed class ModuleV2 {
         }
     }
 
-    data class Conjunction(override val name: String, val history: MutableMap<String, PulseType>) : ModuleV2() {
+    data class Conjunction(override val name: String, val history: MutableMap<String, PulseType>) : Module() {
         override fun send(pulse: PulseType): PulseType {
             return if (history.values.all { type -> type == PulseType.HIGH }) {
                 PulseType.LOW
@@ -50,7 +50,7 @@ sealed class ModuleV2 {
 
     }
 
-    data class NoOpKeepAlive(override val name: String) : ModuleV2() {
+    data class NoOpKeepAlive(override val name: String) : Module() {
         override fun send(pulse: PulseType) = PulseType.KEEPALIVE
     }
 }
