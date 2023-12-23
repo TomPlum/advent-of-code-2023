@@ -13,4 +13,9 @@ class ForestMapTest {
     fun partOneExample() {
         assertThat(forestMap.longestHikeSteps()).isEqualTo(94)
     }
+
+    @Test
+    fun partTwoExample() {
+        assertThat(forestMap.longestHikeStepsNoSlopes()).isEqualTo(154)
+    }
 }

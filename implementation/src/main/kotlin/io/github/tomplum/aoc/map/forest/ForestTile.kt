@@ -3,9 +3,9 @@ package io.github.tomplum.aoc.map.forest
 import io.github.tomplum.libs.math.map.MapTile
 
 class ForestTile(override val value: Char): MapTile<Char>(value) {
-    fun isStartingPoint() = value == 'S'
+    fun isTraversable() = isPath() || isSteepSlope()
 
-    fun isTraversablePath() = value == '.' || isSteepSlope()
+    fun isPath() = value == '.'
 
     fun isForestWall() = value == '#'
 

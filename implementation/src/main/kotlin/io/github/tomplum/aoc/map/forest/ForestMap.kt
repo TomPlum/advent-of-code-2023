@@ -6,6 +6,7 @@ import io.github.tomplum.libs.math.point.Point2D
 
 class ForestMap(data: List<String>): AdventMap2D<ForestTile>() {
 
+    private val startingPosition: Point2D
     private val targetDestination: Point2D
     private val visited = mutableMapOf<Point2D, Boolean>()
 
@@ -26,46 +27,96 @@ class ForestMap(data: List<String>): AdventMap2D<ForestTile>() {
             y++
         }
 
+        startingPosition = getDataMap().entries
+            .filter { (pos) -> pos.y == 0 }
+            .single { (_, tile) -> tile.isTraversable() }
+            .key
+
         targetDestination = getDataMap().entries
             .filter { (pos) -> pos.y == yMax()!! }
-            .single { (_, tile) -> tile.isTraversablePath() }
+            .single { (_, tile) -> tile.isTraversable() }
             .key
     }
 
-
     fun longestHikeSteps() = findLongestPath(
-        currentPosition = getDataMap().entries
-            .filter { (pos) -> pos.y == 0 }
-            .single { (_, tile) -> tile.isTraversablePath() }
-            .key,
-        visited = visited
+        currentPosition = startingPosition,
+        visited = visited,
+        findTraversableTiles = { currentPosition ->
+            val tile = getTile(currentPosition)
+            when {
+                tile.isSteepSlope() -> listOf(currentPosition.getIcySlopeDestination(tile.value) to 1)
+                else -> currentPosition.orthogonallyAdjacent()
+                    .filter { pos -> getTile(pos, ForestTile('#')).isTraversable() }
+                    .map { pos -> pos to 1 }
+            }
+        }
     )
 
-    private fun findLongestPath(currentPosition: Point2D, visited: MutableMap<Point2D, Boolean>, distance: Int = 0): Int {
+    fun longestHikeStepsNoSlopes(): Int {
+        val junctions = mutableMapOf(
+            startingPosition to mutableListOf<Pair<Point2D, Int>>(),
+            targetDestination to mutableListOf()
+        )
+
+        filterTiles { tile -> tile.isPath() }
+            .filter { (pos) -> pos.orthogonallyAdjacent().filter { getTile(it, ForestTile('#')).isTraversable() }.size > 2 }
+            .forEach { (pos) -> junctions[pos] = mutableListOf() }
+
+        junctions.keys.forEach { junction ->
+            var current = setOf(junction)
+            val visited = mutableSetOf(junction)
+            var distance = 0
+
+            while (current.isNotEmpty()) {
+                distance++
+                current = buildSet {
+                    current.forEach { currentPosition ->
+                        currentPosition.orthogonallyAdjacent()
+                            .filter { getTile(currentPosition, ForestTile('*')).isTraversable() }
+                            .filter { pos -> pos !in visited }
+                            .forEach { pos ->
+                                if (pos in junctions) {
+                                    junctions.getValue(junction).add(pos to distance)
+                                } else {
+                                    add(pos)
+                                    visited.add(pos)
+                                }
+                            }
+                    }
+                }
+            }
+        }
+
+        return findLongestPath(
+            currentPosition = startingPosition,
+            visited = visited,
+            findTraversableTiles = { currentPosition ->
+                junctions.getValue(currentPosition)
+            }
+        )
+    }
+
+    private fun findLongestPath(
+        currentPosition: Point2D,
+        visited: MutableMap<Point2D, Boolean>,
+        distance: Int = 0,
+        findTraversableTiles: (currentPosition: Point2D) -> List<Pair<Point2D, Int>>
+    ): Int {
         if (currentPosition == targetDestination) {
             return distance
         }
 
         visited[currentPosition] = true
 
-        val longestHike = currentPosition.getTraversableNeighbours()
-            .filterNot { pos -> visited[pos] == true }
-            .maxOfOrNull { nextPosition ->
-                findLongestPath(nextPosition, visited, distance + 1)
+        val longestHike = findTraversableTiles(currentPosition)
+            .filterNot { (pos) -> visited[pos] == true }
+            .maxOfOrNull { (nextPosition, pathWeight) ->
+                findLongestPath(nextPosition, visited, distance + pathWeight, findTraversableTiles)
             }
 
         visited[currentPosition] = false
 
         return longestHike ?: 0
-    }
-
-    private fun Point2D.getTraversableNeighbours(): List<Point2D> {
-        val tile = getTile(this)
-        return when {
-            tile.isSteepSlope() -> listOf(this.getIcySlopeDestination(tile.value))
-            else -> this.orthogonallyAdjacent()
-                .filter { pos -> getTile(pos, ForestTile('#')).isTraversablePath() }
-        }
     }
 
     private fun Point2D.getIcySlopeDestination(slope: Char) = when(slope) {

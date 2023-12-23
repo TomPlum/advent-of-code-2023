@@ -12,4 +12,8 @@ class Day23: Solution<Int, Int> {
     override fun part1(): Int {
         return forestMap.longestHikeSteps()
     }
+
+    override fun part2(): Int {
+        return forestMap.longestHikeStepsNoSlopes()
+    }
 }
