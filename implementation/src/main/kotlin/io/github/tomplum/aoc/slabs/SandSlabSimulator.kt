@@ -1,109 +1,80 @@
 package io.github.tomplum.aoc.slabs
 
 import io.github.tomplum.libs.math.Direction
-import io.github.tomplum.libs.math.map.AdventMap3D
+import io.github.tomplum.libs.math.point.Point2D
 import io.github.tomplum.libs.math.point.Point3D
 
-class SandSlabSimulator(snapshot: List<String>): AdventMap3D<SandTile>() {
+class SandSlabSimulator(snapshot: List<String>) {
 
-    private val points = mutableMapOf<Int, List<Point3D>>()
+    private val bricks = snapshot
+        .mapIndexed { index, line -> Brick.from(index, line) }
+        .sortedBy { brick -> brick.zRange.first }
+
+    private val supports = mutableMapOf<Int, MutableSet<Int>>()
+    private val supported = mutableMapOf<Int, MutableSet<Int>>()
 
     init {
-        snapshot
-            .map { line -> line.split("~") }
-            .map { (start, end) ->
-                val from = start.split(",").let { (x, y, z) -> Point3D(x.toInt(), y.toInt(), z.toInt()) }
-                val to = end.split(",").let { (x, y, z) -> Point3D(x.toInt(), y.toInt(), z.toInt()) }
+        val maxes = mutableMapOf<Point2D, Pair<Int, Int>>().withDefault { -1 to 0 }
 
-                if (from.x != to.x) {
-                    (from.x..to.x).map { xNew ->
-                        Point3D(xNew, from.y,  from.z)
-                    }
-                } else if (from.y != to.y) {
-                    (from.y..to.y).map { yNew ->
-                        Point3D(from.x, yNew,  from.z)
-                    }
-                } else if (from.z != to.z) {
-                    (from.z..to.z).map { zNew ->
-                        Point3D(from.x, from.y,  zNew)
-                    }
-                } else {
-                    throw IllegalArgumentException("Cannot find differing ordinate between from [$from] and to [$to]")
-                }
-            }.forEachIndexed { index, slabPoints ->
-                points[index + 1] = slabPoints
+        for (brick in bricks) {
+            val points = brick.getSecondDimension()
+            val zMax = points.map { pos -> maxes.getValue(pos) }.maxOf { it.second }
+            brick.zRange = zMax + 1..<zMax + 1 + brick.zRange.last - brick.zRange.first + 1
 
-                slabPoints.forEach { point ->
-                    addTile(point, SandTile(index + 1))
+            for (point in points) {
+                val (id, z) = maxes.getValue(point)
+
+                if (z == zMax && id != -1) {
+                    supports.getOrPut(id) { mutableSetOf() }.add(brick.id)
+                    supported.getOrPut(brick.id) { mutableSetOf() }.add(id)
                 }
+
+                maxes[point] = brick.id to brick.zRange.last
             }
+        }
     }
 
     fun calculateDisintegratableBricks(): Int {
-        points.entries.sortedBy { (_, positions) -> positions.first().z }.forEach { (slabId, slabPoints) ->
-            if (slabPoints.none { point -> point.z == 1 }) {
-                var canFall = true
-                var currentSlabPositions = slabPoints
+        val nonDisintegrated = supports.count { (_, others) -> others.any { other -> supported.getValue(other).size == 1 } }
+        return bricks.size - nonDisintegrated
+    }
 
-                while(canFall) {
-                    val nextPositions = currentSlabPositions.map { point -> point.zShift(Direction.DOWN) }
-                    val isHorizontalBrick = currentSlabPositions.map { pos -> pos.z }.distinct().size == 1
+    fun simulateChainReaction(): Int = bricks.sumOf { brick ->
+        val falling = mutableSetOf(brick.id)
+        var nextBricks = supports.getOrDefault(brick.id, emptySet())
 
-                    val canMove = if (isHorizontalBrick) {
-                        nextPositions.none { pos -> hasRecorded(pos) }
-                    } else {
-                        !hasRecorded(nextPositions.minBy { pos -> pos.z })
+        while (nextBricks.isNotEmpty()) {
+            nextBricks = buildSet {
+                nextBricks.forEach { next ->
+                    if ((supported.getValue(next) - falling).isEmpty()) {
+                        falling += next
                     }
 
-                    if (canMove) {
-                        currentSlabPositions.forEach { oldPos -> removeTile(oldPos) }
-                        nextPositions.forEach { newPos -> addTile(newPos, SandTile(slabId)) }
-                        currentSlabPositions = nextPositions
-                    } else {
-                        canFall = false
-                    }
+                    addAll(supports.getOrDefault(next, emptySet()))
                 }
             }
         }
 
-        val brickPositions = getDataMap().entries.groupBy { it.value.id }
-        val count = brickPositions.count { (id, currentBricks) ->
-            val above = currentBricks.map { it.key }.map { it.zShift(Direction.UP) }
-            val tilesAbove = above.map { getTile(it, SandTile(0)) }.filterNot { it.isEmpty() }
-
-            val isCurrentBrickHorizontal = currentBricks.map { (pos) -> pos.z }.distinct().size == 1
-
-            val isSupportingAnotherBrick = if (isCurrentBrickHorizontal) {
-                tilesAbove.isNotEmpty()
-            } else {
-                hasRecorded(above.maxBy { pos -> pos.z })
-            }
-
-            if (isSupportingAnotherBrick) {
-                tilesAbove.map { it.id }.distinct().any { aboveBrickId ->
-                    val aboveBrickPos = brickPositions[aboveBrickId]
-                    val isHorizontalBrick = aboveBrickPos!!.map { (pos) -> pos.z }.distinct().size == 1
-                    if (isHorizontalBrick) {
-                        val aboveBrickPosBelow = aboveBrickPos.map { (pos) -> pos.zShift(Direction.DOWN) }.filterNot { it in currentBricks.map { it.key } }
-                        aboveBrickPosBelow.any { hasRecorded(it) }
-                    } else {
-                        false
-                    }
-                }
-            } else true
-
-           /* bricks.none { (pos) ->
-                hasRecorded(pos.zShift(Direction.UP))
-            }*/
-        }
-
-        return count
+        falling.size - 1
     }
 
     // TODO: Move to libs
     private fun Point3D.zShift(direction: Direction): Point3D = when(direction) {
         Direction.UP -> Point3D(this.x, this.y, this.z + 1)
         Direction.DOWN -> Point3D(this.x, this.y, this.z - 1)
-        else -> throw IllegalArgumentException("Cannot shift a 3D point in the z-axis in the $direction direction.。")
+        else -> throw IllegalArgumentException("Cannot shift a 3D point in the z-axis in the $direction direction.")
+    }
+
+    private data class Brick(val id: Int, val xRange: IntRange, val yRange: IntRange, var zRange: IntRange) {
+        companion object {
+            fun from(index: Int, line: String): Brick {
+                val (start, end) = line.split("~")
+                val (x1, y1, z1) = start.split(",").map { value -> value.toInt() }
+                val (x2, y2, z2) = end.split(",").map { value -> value.toInt() }
+                return Brick(index, x1..x2, y1..y2, z1..z2)
+            }
+        }
+
+        fun getSecondDimension() = xRange.flatMap { x -> yRange.map { y -> Point2D(x, y) } }
     }
 }

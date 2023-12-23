@@ -13,4 +13,9 @@ class SandSlabSimulatorTest {
     fun partOneExample() {
         assertThat(simulator.calculateDisintegratableBricks()).isEqualTo(5)
     }
+
+    @Test
+    fun partTwoExample() {
+        assertThat(simulator.simulateChainReaction()).isEqualTo(7)
+    }
 }
