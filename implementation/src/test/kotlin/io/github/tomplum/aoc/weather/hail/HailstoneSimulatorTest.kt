@@ -13,4 +13,9 @@ class HailstoneSimulatorTest {
     fun partOneExample() {
         assertThat(simulator.simulate(xTestArea = 7, yTestArea = 27)).isEqualTo(2)
     }
+
+    @Test
+    fun partTwoExample() {
+        assertThat(simulator.throwStone()).isEqualTo(47)
+    }
 }

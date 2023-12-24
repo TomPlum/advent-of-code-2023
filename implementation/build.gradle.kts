@@ -12,6 +12,8 @@ dependencies {
     implementation(project(":implementation:common"))
     testImplementation(project(":implementation:test-support"))
 
+    implementation("tools.aqua:z3-turnkey:4.12.2.1")
+
     testImplementation("io.mockk:mockk:1.13.8")
 }
 
