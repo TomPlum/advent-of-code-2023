@@ -8,6 +8,7 @@ import com.microsoft.z3.IntExpr
 import com.microsoft.z3.Model
 import com.microsoft.z3.Status
 
+//TODO: Move to libs (remove gradle dep from here once done)
 interface Z3Expr {
     val ctx: Context
     val expr: Expr<out ArithSort>

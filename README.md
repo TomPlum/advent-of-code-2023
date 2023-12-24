@@ -1,6 +1,6 @@
 # :christmas_tree: Advent of Code 2023
 
-![GitHub](https://img.shields.io/badge/stars-46%2F50-yellow)
+![GitHub](https://img.shields.io/badge/stars-48%2F50-yellow)
 
 ## What is Advent of Code?
 
@@ -68,7 +68,7 @@ tests in the `common`, `implementation` and `solutions` Gradle sub-projects as w
 | 21  | -             | -        | -               | -        | [](docs/DAY21.MD)                                |
 | 22  | 386           | 430μs    | 39933           | 69ms     | [Sand Slabs](docs/DAY22.MD)                      |
 | 23  | 2318          | 372ms    | 6426            | 9s 115ms | [A Long Walk](docs/DAY23.MD)                     |
-| 24  | -             | -        | -               | -        | [](docs/DAY24.MD)                                |
+| 24  | 31208         | 31ms     | 580043851566574 | 1s 179ms | [Never Tell Me The Odds](docs/DAY24.MD)          |
 | 25  | -             | -        | -               | -        | [](docs/DAY25.MD)                                |
 
 Average Execution Time: 838ms \

@@ -1,6 +1,5 @@
 package io.github.tomplum.aoc.weather.hail
 
-import io.github.tomplum.libs.math.point.Point3D
 import kotlin.math.sign
 
 // TODO: Shall we add these other types to lib?
