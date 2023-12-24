@@ -1,5 +1,7 @@
 package io.github.tomplum.aoc.weather.hail
 
+import kotlin.math.sign
+
 data class DoublePoint2D(val x: Double, val y: Double)
 
 data class Line(val a: DoublePoint2D, val b: DoublePoint2D, val velocity: DoublePoint2D) {
@@ -27,7 +29,7 @@ data class Line(val a: DoublePoint2D, val b: DoublePoint2D, val velocity: Double
 }
 
 class HailstoneSimulator(private val data: List<String>) {
-    fun simulate(xTestArea: Int, yTestArea: Int): Int {
+    fun simulate(xTestArea: Long, yTestArea: Long): Int {
         val hailstoneData = data.map { line ->
             val (coords, velocity) = line.split("@").map { result -> result.trim() }
             val start = coords.split(", ").map { value -> value.toDouble() }.let { (x, y, z) -> DoublePoint2D(x, y) }
@@ -44,11 +46,9 @@ class HailstoneSimulator(private val data: List<String>) {
 
         return lines.distinctPairs().count { (a, b) ->
             val intersect = a.intersectWith(b)
-            val xDelta = a.a.x - intersect.x
-            val yDelta = a.a.y - intersect.y
-            val xFuture = (a.velocity.x > 0 && xDelta > 0) || (a.velocity.x < 0 && xDelta < 0)
-            val yFuture = (a.velocity.y > 0 && yDelta > 0) || (a.velocity.y < 0 && yDelta < 0)
-            val isFuture = xFuture && yFuture
+            val firstInFuture = (intersect.x - a.a.x).sign == a.velocity.x.sign && (intersect.y - a.a.y).sign == a.velocity.y.sign
+            val secondInFuture = (intersect.x - b.a.x).sign == b.velocity.x.sign && (intersect.y - b.a.y).sign == b.velocity.y.sign
+            val isFuture = firstInFuture && secondInFuture
             val inRange = intersect.x in testAreaRange && intersect.y in testAreaRange
             inRange && isFuture
         }
