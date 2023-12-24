@@ -3,7 +3,9 @@ package io.github.tomplum.aoc.weather.hail
 import io.github.tomplum.libs.math.point.Point3D
 import kotlin.math.sign
 
+// TODO: Shall we add these other types to lib?
 data class DoublePoint2D(val x: Double, val y: Double)
+data class LongPoint3D(val x: Long, val y: Long, val z: Long)
 
 data class Line(val a: DoublePoint2D, val b: DoublePoint2D, val velocity: DoublePoint2D) {
     fun intersectWith(other: Line): DoublePoint2D {
@@ -73,16 +75,16 @@ class HailstoneSimulator(private val data: List<String>) {
 
             val hailstoneData = data.map { line ->
                 val (coords, velocity) = line.split("@").map { result -> result.trim() }
-                val start = coords.split(", ").map { value -> value.toInt() }.let { (x, y, z) -> Point3D(x, y, z) }
-                val initialVelocity = velocity.split(", ").map { value -> value.replace(" ", "").toDouble() }.let { (x, y, z) -> Triple(x, y, z) }
+                val start = coords.split(", ").map { value -> value.toLong() }.let { (x, y, z) -> LongPoint3D(x, y, z) }
+                val initialVelocity = velocity.split(", ").map { value -> value.replace(" ", "").toLong() }.let { (x, y, z) -> Triple(x, y, z) }
                 start to initialVelocity
             }
 
             val eqs = hailstoneData.take(3).flatMapIndexed { idx, (ball, velocity) ->
                 listOf(
-                    (x_t - ball.x.toLong()) eq (dt[idx] * (velocity.first.toLong() - xvel_t)),
-                    (y_t - ball.y.toLong()) eq (dt[idx] * (velocity.second.toLong() - yvel_t)),
-                    (z_t - ball.z.toLong()) eq (dt[idx] * (velocity.third.toLong() - zvel_t)),
+                    (x_t - ball.x) eq (dt[idx] * (velocity.first - xvel_t)),
+                    (y_t - ball.y) eq (dt[idx] * (velocity.second - yvel_t)),
+                    (z_t - ball.z) eq (dt[idx] * (velocity.third - zvel_t)),
                 )
             }
 
