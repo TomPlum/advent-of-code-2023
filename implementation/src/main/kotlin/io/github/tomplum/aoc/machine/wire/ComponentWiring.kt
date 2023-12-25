@@ -27,4 +27,8 @@ class ComponentWiring(data: List<String>) {
 
         return (graph.vertexSet().size - oneSide.size) * oneSide.size
     }
+
+    fun pushBigRedButton(): Int {
+        return 49
+    }
 }

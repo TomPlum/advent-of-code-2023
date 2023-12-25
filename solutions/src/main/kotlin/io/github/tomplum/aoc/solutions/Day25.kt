@@ -12,4 +12,8 @@ class Day25: Solution<Int, Int> {
     override fun part1(): Int {
         return componentWiring.disconnectWires()
     }
+
+    override fun part2(): Int {
+        return componentWiring.pushBigRedButton()
+    }
 }
